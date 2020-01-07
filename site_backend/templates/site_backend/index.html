@@ -272,13 +272,14 @@
 
 		                  <tbody>
                             {% for wt in work_types %}
+                                {% load djutils %}
 		                    <tr>
 		                      <td>{{ wt.type }}</td>
                               {% for city in cites %}
-		                        <th>{{emp_ammount_in_cities}}</th>
+                                  <th><a href="#">{{emp_ammount_in_cities|get_value_from_dict:city.id|get_value_from_dict:wt.id}}</a></th>
                               {% endfor %}
-		                      <td><a href=#>15</a></td>
-		                      <td><a href=#>5</a></td>
+                                <th><a href="#">{{active_by_wt|get_value_from_dict:wt.id}}</a></th>
+                                <th><a href="#">{{exclusive_by_wt|get_value_from_dict:wt.id}}</a></th>
 		                    </tr>
                             {% endfor %}
 

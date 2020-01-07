@@ -22,10 +22,12 @@ def index_router(request):
                           'sum_bonuses': services.get_sum_bonuses(),
                           'sum_excl_debt': services.sum_excl_debt(),
                           'left_transfers': services.get_sum_left_transfers(),
+                          'work_types': services.get_work_types(),
                           'very_first_emps': services.get_employees_very_first(),
                           'cites': services.get_active_cities(),
                           'emp_ammount_in_cities': services.get_emp_ammount_in_cities(),
-                          'work_types': services.get_work_types()
+                          'exclusive_by_wt': services.get_emp_ammount_wt(exclusive=True),
+                          'active_by_wt': services.get_emp_ammount_wt(active=True),
                        }
                       )
     elif request.method == 'POST':
@@ -47,13 +49,13 @@ def index_router(request):
                               'very_first_emps': services.get_employees_very_first(),
                               'cites': services.get_active_cities(),
                               'emp_ammount_in_cities': services.get_emp_ammount_in_cities(),
+                              'exclusive_by_wt': services.get_exclusive_ammount_wt(),
                               'work_types': services.get_work_types()
 
-                          }
+                                 }
                           )
         else:
             redirect('/')
-
     return HttpResponse(status=405)
 
 

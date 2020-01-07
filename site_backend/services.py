@@ -151,31 +151,73 @@ def get_active_cities():
 
 
 def get_emp_ammount_in_cities():
-    count_wt_in_city = {}
-    work_types = models.WorkType.objects.filter(active=1).values('id', 'type')
+    data = {}
     cities = models.City.objects.filter(active=1).values('id', 'city')
+    work_types = models.WorkType.objects.filter(active=1).values('id', 'type')
 
-    ##work_types = execute('SELECT id, type FROM `work_type` WHERE `id_field`=%(p)s AND active=1 ORDER BY `id`', id_field)
-    # cities = execute('SELECT id, city FROM city WHERE active=1 AND id_field=%(p)s', id_field)\
-    for work_type in work_types:
-        # print(work_type)
-        emp_with_wt = []
-        temp = models.EmployeesWorkType.objects.filter(id_work_type=work_type['id']).values('id_user')
-        for id in temp:
-            emp_with_wt.append(id['id_user'])
-        for city in cities:
-
+    for city in cities:
+        wt_data = {}
+        for wt in work_types:
             count = 0
-            print('city', city)
-            emp_in_city = models.Employees.objects.filter(id_city=city['id']).values('id')
-            for emp in emp_in_city:
-                if emp['id'] in emp_with_wt:
+            emp_in_city = []
+            emp_with_wt = []
+            emp_in_city_dict = models.Employees.objects.filter(id_city=city['id']).values('id')
+            for emp in emp_in_city_dict:
+                emp_in_city.append(emp['id'])
+            emp_with_wt_dict = models.EmployeesWorkType.objects.filter(id_work_type=wt['id']).values('id_user')
+            for emp in emp_with_wt_dict:
+                emp_with_wt.append(emp['id_user'])
+            for emp in emp_with_wt:
+                if emp in emp_in_city:
                     count += 1
-                    print('true', city['id'])
-            count_wt_in_city.update({work_type['id']: {city['id']: count}})
-    print('count', count_wt_in_city)
-    return count_wt_in_city
+            wt_data.update({wt['id']: count})
+        data.update({city['id']: wt_data})
+    return data
 
+
+def get_emp_ammount_wt(exclusive=False, active=False):
+    data = {}
+    emps = []
+    if exclusive:
+        emp_dict = models.Employees.objects.filter(exclusive=1).values('id')
+    elif active:
+        emp_dict = models.Employees.objects.filter(active=1).values('id')
+    else:
+        return 'err'
+    for e in emp_dict:
+        emps.append(e['id'])
+    work_types = models.WorkType.objects.filter(active=1).values('id', 'type')
+    for wt in work_types:
+        count = 0
+        emp_with_wt = []
+        emp_with_wt_dict = models.EmployeesWorkType.objects.filter(id_work_type=wt['id']).values('id_user')
+        for emp in emp_with_wt_dict:
+            emp_with_wt.append(emp['id_user'])
+        for emp in emp_with_wt:
+            if emp in emps:
+                count += 1
+        data.update({wt['id']: count})
+    return data
+
+
+def get_online_ammount_wt():
+    data = {}
+    excl = []
+    excl_dict = models.Employees.objects.filter(active=1).values('id')
+    for excl in excl_dict:
+        excl.append(excl_dict['id'])
+    work_types = models.WorkType.objects.filter(active=1).values('id', 'type')
+    for wt in work_types:
+        count = 0
+        emp_with_wt = []
+        emp_with_wt_dict = models.EmployeesWorkType.objects.filter(id_work_type=wt['id']).values('id_user')
+        for emp in emp_with_wt_dict:
+            emp_with_wt.append(emp['id_user'])
+        for emp in emp_with_wt:
+            if emp in excl:
+                count += 1
+        data.update({wt['id']: count})
+    return data
 
 def get_employees(id_field, id_status=None, id_city=None, number=None, id_user=None,
                   id_work_type=None, not_null_balance=None, very_first=None, exclusive=None, is_active=None,
