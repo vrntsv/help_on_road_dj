@@ -49,8 +49,8 @@ def index_router(request):
                               'very_first_emps': services.get_employees_very_first(),
                               'cites': services.get_active_cities(),
                               'emp_ammount_in_cities': services.get_emp_ammount_in_cities(),
-                              'exclusive_by_wt': services.get_exclusive_ammount_wt(),
-                              'work_types': services.get_work_types()
+                              'exclusive_by_wt': services.get_emp_ammount_wt(exclusive=True),
+                              'active_by_wt': services.get_emp_ammount_wt(active=True),
 
                                  }
                           )
@@ -59,4 +59,30 @@ def index_router(request):
     return HttpResponse(status=405)
 
 
+def directions_router(request):
+    if request.method == 'GET':
+        return render(request, 'site_backend/directions.html',
+                      {
+                          'work_types': services.get_work_types(),
+                      })
+    elif request.method == 'POST':
+        print(request.POST)
+        try:
+            services.add_new_work_type(request.POST.get('directions_name'),
+            request.POST.get('step_0'),
+            request.POST.get('step_1'),
+            request.POST.get('step_2'),
+            request.POST.get('step_3'),
+            request.POST.get('step_4'),
+            request.POST.get('step_5'),
+            request.POST.get('step_6'))
+        except Exception:
+            redirect('directions')
+            return
+        return render(request, 'site_backend/directions.html',
+                      {
+                          'work_types': services.get_work_types(),
+                       })
+
+    return HttpResponse(status=405)
 # Create your views here.

@@ -175,6 +175,18 @@ def get_emp_ammount_in_cities():
     return data
 
 
+def add_new_work_type(name, step_0, step_1, step_2, step_3, step_4, step_5):
+    new_wt = models.WorkType(id_field=1, type=name,
+                             comm_stage_0=step_0,
+                             comm_stage_1=step_1,
+                             comm_stage_2=step_2,
+                             comm_stage_3=step_3,
+                             comm_stage_4=step_4,
+                             comm_stage_5=step_5,
+                             )
+    new_wt.save()
+
+
 def get_emp_ammount_wt(exclusive=False, active=False):
     data = {}
     emps = []
