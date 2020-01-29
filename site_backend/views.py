@@ -11,7 +11,7 @@ def index_router(request):
     # sum_bonuses = services.get_sum_bonuses()
     # sum_promo = services.get_sum_promo()
     if request.method == 'GET':
-        print(services.get_emp_ammount_in_cities())
+        print('test', services.get_emp_ammount_in_cities())
         return render(request, 'site_backend/index.html',
                       {
                           'sum_very_first': services.get_sum_very_first(),
@@ -85,4 +85,20 @@ def directions_router(request):
                        })
 
     return HttpResponse(status=405)
+
+
+def active_masters_router(request):
+    if request.method == 'GET':
+        print('am info', services.get_active_masters_info())
+        return render(request, 'site_backend/active_masters.html', {
+            'active_masters': services.get_active_masters_info()
+        })
+    return HttpResponse(status=405)
+
+
+def active_master_wt_city(request, id_wt, id_city):
+    if request.method == 'GET':
+        return render(request, 'site_backend/active_masters.html', {
+            'active_masters': services.get_active_masters_info()
+        })
 # Create your views here.

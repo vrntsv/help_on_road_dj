@@ -1,8 +1,16 @@
 from . import models
-from django.db.models import Sum
+from django.db.models import Sum, Count
 import datetime
 from datetime import date, timedelta
 
+
+def dictfetchall(cursor):
+    "Return all rows from a cursor as a dict"
+    columns = [col[0] for col in cursor.description]
+    return [
+        dict(zip(columns, row))
+        for row in cursor.fetchall()
+    ]
 
 
 def get_sum_very_first():
@@ -53,12 +61,12 @@ def get_sum_proped_by_date(start_date=date.today() - timedelta(days=31), end_dat
     :return:
     """
     sum = 0
-    proped_ids = models.PropedDeals.objects.values('deal_id')
+    proped_ids = models.PropedDeals.objects.values('id_deal')
     print(proped_ids)
     for id in proped_ids:
         comm = models.Deals.objects.filter(date_filing__gte=start_date,
                                            date_filing__lte=end_date,
-                                           id=id['deal_id']).aggregate(Sum('commission'))
+                                           id=id['id_deal']).aggregate(Sum('commission'))
         print('comm', comm)
         if comm['commission__sum']:
             sum += int(int(comm['commission__sum'])*0.33)
@@ -137,8 +145,8 @@ def get_employees_very_first():
     print(very_first_emps)
     for very_first_data in very_first_emps:
         print('\n\n', very_first_data)
-        vf_data = models.VeryFirst.objects.filter(id_user=very_first_data['id_user']).values()
-        emp_data = models.Employees.objects.filter(id=very_first_data['id_user']).values()
+        vf_data = models.VeryFirst.objects.filter(id=very_first_data['id']).values()
+        emp_data = models.Employees.objects.filter(id=very_first_data['id']).values()
         full_data.append({'very_first_data': list(vf_data),
                           'emp_data': list(emp_data)})
         print(full_data)
@@ -158,6 +166,9 @@ def get_emp_ammount_in_cities():
     for city in cities:
         wt_data = {}
         for wt in work_types:
+            emps = models.Employees.objects.filter(id_city=city['id'], employeesworktype__id_work_type=wt['id'])
+            print(emps)
+            return emps
             count = 0
             emp_in_city = []
             emp_with_wt = []
@@ -165,6 +176,7 @@ def get_emp_ammount_in_cities():
             for emp in emp_in_city_dict:
                 emp_in_city.append(emp['id'])
             emp_with_wt_dict = models.EmployeesWorkType.objects.filter(id_work_type=wt['id']).values('id_user')
+
             for emp in emp_with_wt_dict:
                 emp_with_wt.append(emp['id_user'])
             for emp in emp_with_wt:
@@ -231,141 +243,189 @@ def get_online_ammount_wt():
         data.update({wt['id']: count})
     return data
 
-def get_employees(id_field, id_status=None, id_city=None, number=None, id_user=None,
-                  id_work_type=None, not_null_balance=None, very_first=None, exclusive=None, is_active=None,
-                  negative_balance=None, reg_today=None, proped=None):
-    """
-    Получить исполнителей по статусу и отрасли
-    """
-    # print('number', number)
-    employees_list = []
-    sql = 'SELECT emp.id, emp.mail, emp.promo_id, emp.executor_type as id_executor, ' \
-          'ex.type as executor_type, emp.id_city, c.city, emp.full_name as fio, ' \
-          'emp.phone, emp.exclusive, emp.status as id_status, su.status_type as status, emp.comment, emp.about_us, ' \
-          'DATE_FORMAT(emp.reg_date, %(p)s) as reg_date, emp.active, emp.balance, emp.bonuses ' \
-          'FROM employees emp ' \
-          'JOIN employees_work_type ewt ON emp.id=ewt.id_user ' \
-          'LEFT JOIN work_type wt ON ewt.id_work_type=wt.id ' \
-          'LEFT JOIN field_of_activity foa ON foa.id=wt.id_field ' \
-          'LEFT JOIN executor ex ON emp.executor_type=ex.id ' \
-          'LEFT JOIN city c ON emp.id_city=c.id ' \
-          'LEFT JOIN status_user su ON emp.status=su.id ' \
-          'WHERE wt.id_field={} AND c.active=1 '.format(id_field)
-    if id_user is not None:
-        sql += 'AND emp.id={} '.format(id_user)
-    if id_status is not None:
-        sql += 'AND emp.status={} '.format(id_status)
-    if id_city is not None:
-        sql += 'AND emp.id_city={} '.format(id_city)
-    if id_work_type is not None:
-        sql += 'AND ewt.id_work_type={} '.format(id_work_type)
-    if not_null_balance is not None:
-        sql += 'AND emp.balance>0 '
-    if exclusive is not None:
-        sql += 'AND emp.exclusive=1 '
-    if negative_balance is not None:
-        sql += 'AND emp.balance<0 '
-    if is_active is not None:
-        sql += 'AND emp.active=1 '
-    if reg_today is not None:
-        sql += 'AND reg_date=CURDATE()'
-    if number is not None:
-        number = '%' + str(int(''.join(filter(str.isdigit, number))))[-10:]
-        if len(number) == 11:
-            employees = models.Employees.objects.raw(sql + 'AND emp.phone LIKE  %(p)s GROUP BY emp.id', '%m.%d.%y', number)
-        else:
-            return []
-    else:
-        sql += 'GROUP BY emp.id'
-        employees = models.Employees.objects.raw(sql, '%m.%d.%y')
-    num = 0
-    for emp in employees:
-        num += 1
-        # work_types = execute('SELECT ewt.id_work_type, wt.type as work_type FROM employees_work_type ewt '
-        #                      'RIGHT JOIN work_type wt ON ewt.id_work_type=wt.id '
-        #                      'WHERE ewt.id_user=%(p)s', emp['id'])
-        work_types = get_work_types(id_field)
-        # print(work_types)
-        work_types_list = []
-        for wt in work_types:
-            if execute('SELECT * FROM employees_work_type WHERE `id_user`=%(p)s AND `id_work_type`=%(p)s',
-                       emp['id'], wt['id']):
-                work_types_list.append(
-                    {
-                        'id_work_type': wt['id'],
-                        'work_type': wt['type'],
-                        'active': 1
-                    })
-            else:
-                work_types_list.append(
-                    {
-                        'id_work_type': wt['id'],
-                        'work_type': wt['type'],
-                        'active': 0
-                    })
-        successful_deals_count = execute('SELECT COUNT(*) as sd_count '
-                                         'FROM deals WHERE id_user=%(p)s AND status=4', emp['id'])[0]['sd_count']
-        drop_deals_count = execute('SELECT COUNT(*) as dd_count '
-                                   'FROM deals WHERE id_user=%(p)s AND status=-1', emp['id'])[0]['dd_count']
-        sum_commissions = execute('SELECT SUM(commission) as sum_commissions '
-                                  'FROM deals WHERE id_user=%(p)s', emp['id'])[0]['sum_commissions']
-        drop_deal = execute('SELECT d.id, d.title, d.phone, sd.status_type as status, d.comment, '
-                            'DATE_FORMAT(d.date_drop, %(p)s) as date_drop, wt.type '
-                            'FROM deals d '
-                            'LEFT JOIN status_deal sd ON d.status=sd.id '
-                            'LEFT JOIN work_type wt ON d.id_work_type=wt.id '
-                            'WHERE id_user=%(p)s AND status=-1 '
-                            'ORDER BY date_drop DESC LIMIT 1', '%m.%d.%y %H:%i', emp['id'])
-        deals = execute('SELECT FORMAT(@i:=@i+1,0) AS num, d.id, d.title, d.description, d.price, d.value, '
-                        'd.address, d.phone, DATE_FORMAT(d.date, %(p)s) as date, d.commission, d.commission_precent, '
-                        'sd.status_type as status, d.self_employeed, '
-                        'd.money_on_balance, d.comment, wt.type '
-                        'FROM (select @i:=0) AS iter, deals d '
-                        'LEFT JOIN status_deal sd ON d.status=sd.id '
-                        'LEFT JOIN work_type wt ON d.id_work_type=wt.id '
-                        'WHERE id_user=%(p)s', '%m.%d.%y %H:%i', emp['id'])
 
-        very_fist_list = execute('SELECT `id_user` from `very_first`')
-        full_list = []
-        for item in range(0, very_fist_list.__len__()):
-            full_list.append(very_fist_list[item]['id_user'])
-        if drop_deal:
-            drop_deal = drop_deal[0]
-        if very_fist_list:
-            if emp['id'] in full_list:
-                vf = '+'
-            else:
-                vf = '-'
+# def get_employees(id_status=None, id_city=None, number=None, id_user=None,
+#                   id_work_type=None, not_null_balance=None, very_first=None, exclusive=None, is_active=None,
+#                   negative_balance=None, reg_today=None, proped=None):
+#     """
+#     Получить исполнителей по статусу и отрасли
+#     """
+#     # print('number', number)
+#     from django.db import connection
+#     cursor = connection.cursor()
+#     employees_list = []
+#     sql = 'SELECT emp.id, emp.mail, emp.promo_id, emp.executor_type as id_executor, ' \
+#           'ex.type as executor_type, emp.id_city, c.city, emp.full_name as fio, ' \
+#           'emp.phone, emp.exclusive, emp.status as id_status, su.status_type as status, emp.comment, emp.about_us, ' \
+#           'DATE_FORMAT(emp.reg_date, %s) as reg_date, emp.active, emp.balance, emp.bonuses ' \
+#           'FROM employees emp ' \
+#           'JOIN employees_work_type ewt ON emp.id=ewt.id_user ' \
+#           'LEFT JOIN work_type wt ON ewt.id_work_type=wt.id ' \
+#           'LEFT JOIN field_of_activity foa ON foa.id=wt.id_field ' \
+#           'LEFT JOIN executor ex ON emp.executor_type=ex.id ' \
+#           'LEFT JOIN city c ON emp.id_city=c.id ' \
+#           'LEFT JOIN status_user su ON emp.status=su.id ' \
+#           'WHERE c.active=1 '
+#     if id_user is not None:
+#         sql += 'AND emp.id={} '.format(id_user)
+#     if id_status is not None:
+#         sql += 'AND emp.status={} '.format(id_status)
+#     if id_city is not None:
+#         sql += 'AND emp.id_city={} '.format(id_city)
+#     if id_work_type is not None:
+#         sql += 'AND ewt.id_work_type={} '.format(id_work_type)
+#     if not_null_balance is not None:
+#         sql += 'AND emp.balance>0 '
+#     if exclusive is not None:
+#         sql += 'AND emp.exclusive=1 '
+#     if negative_balance is not None:
+#         sql += 'AND emp.balance<0 '
+#     if is_active is not None:
+#         sql += 'AND emp.active=1 '
+#     if reg_today is not None:
+#         sql += 'AND reg_date=CURDATE()'
+#     if number is not None:
+#         number = '%' + str(int(''.join(filter(str.isdigit, number))))[-10:]
+#         if len(number) == 11:
+#             employees = dictfetchall(cursor.execute(sql + 'AND emp.phone LIKE {} GROUP BY emp.id',
+#                                                     '%m.%d.%y'.format(number)))
+#         else:
+#             return []
+#     else:
+#         sql += 'GROUP BY emp.id'
+#         employees = dictfetchall(cursor.execute(sql))
+#     num = 0
+#     for emp in employees:
+#         num += 1
+#         # work_types = execute('SELECT ewt.id_work_type, wt.type as work_type FROM employees_work_type ewt '
+#         #                      'RIGHT JOIN work_type wt ON ewt.id_work_type=wt.id '
+#         #                      'WHERE ewt.id_user=%(p)s', emp['id'])
+#         work_types = get_work_types(id_field)
+#         # print(work_types)
+#         work_types_list = []
+#         for wt in work_types:
+#             if cursor.execute('SELECT * FROM employees_work_type WHERE `id_user`=%s AND `id_work_type`=%s',
+#                        [emp['id'], wt['id']]):
+#                 work_types_list.append(
+#                     {
+#                         'id_work_type': wt['id'],
+#                         'work_type': wt['type'],
+#                         'active': 1
+#                     })
+#             else:
+#                 work_types_list.append(
+#                     {
+#                         'id_work_type': wt['id'],
+#                         'work_type': wt['type'],
+#                         'active': 0
+#                     })
+#         successful_deals_count = dictfetchall(cursor.execute('SELECT COUNT(*) as sd_count '
+#                                          'FROM deals WHERE id_user=%s AND status=4', [emp['id']]))
+#         drop_deals_count = dictfetchall(cursor.execute('SELECT COUNT(*) as dd_count '
+#                                    'FROM deals WHERE id_user=%s AND status=-1', [emp['id']]))
+#         sum_commissions = dictfetchall(cursor.execute('SELECT SUM(commission) as sum_commissions '
+#                                   'FROM deals WHERE id_user=%s', [emp['id']]))
+#         drop_deal = dictfetchall(cursor.execute('SELECT d.id, d.title, d.phone, sd.status_type as status, d.comment, '
+#                             'DATE_FORMAT(d.date_drop, %s) as date_drop, wt.type '
+#                             'FROM deals d '
+#                             'LEFT JOIN status_deal sd ON d.status=sd.id '
+#                             'LEFT JOIN work_type wt ON d.id_work_type=wt.id '
+#                             'WHERE id_user=%s AND status=-1 '
+#                             'ORDER BY date_drop DESC LIMIT 1', '%m.%d.%y %H:%i', [emp['id']]))
+#         deals = dictfetchall(cursor.execute('SELECT FORMAT(@i:=@i+1,0) AS num, d.id, d.title, d.description, d.price, d.value, '
+#                         'd.address, d.phone, DATE_FORMAT(d.date, %s) as date, d.commission, d.commission_precent, '
+#                         'sd.status_type as status, d.self_employeed, '
+#                         'd.money_on_balance, d.comment, wt.type '
+#                         'FROM (select @i:=0) AS iter, deals d '
+#                         'LEFT JOIN status_deal sd ON d.status=sd.id '
+#                         'LEFT JOIN work_type wt ON d.id_work_type=wt.id '
+#                         'WHERE id_user=%s', '%m.%d.%y %H:%i', [emp['id']]))
+#
+#         very_fist_list = dictfetchall(cursor.execute('SELECT `id_user` from `very_first`'))
+#         full_list = []
+#         for item in range(0, very_fist_list.__len__()):
+#             full_list.append(very_fist_list[item]['id_user'])
+#         if drop_deal:
+#             drop_deal = drop_deal[0]
+#         if very_fist_list:
+#             if emp['id'] in full_list:
+#                 vf = '+'
+#             else:
+#                 vf = '-'
+#         else:
+#             vf = '-'
+#         employees_list.append(
+#             {
+#                 'num': num,
+#                 'id': emp['id'],
+#                 'id_executor': emp['id_executor'],
+#                 'executor_type': emp['executor_type'],
+#                 'id_city': emp['id_city'],
+#                 'promo_id': emp['promo_id'],
+#                 'city': emp['city'],
+#                 'fio': emp['fio'],
+#                 'phone': emp['phone'],
+#                 'mail': emp['mail'],
+#                 'id_status': emp['id_status'],
+#                 'status': emp['status'],
+#                 'exclusive': emp['exclusive'],
+#                 'comment': emp['comment'],
+#                 'about_us': emp['about_us'],
+#                 'reg_date': emp['reg_date'],
+#                 'balance': emp['balance'],
+#                 'bonuses': emp['bonuses'],
+#                 'active': emp['active'],
+#                 'very_first': vf,
+#                 'successful_deals': successful_deals_count,
+#                 'drop deals': drop_deals_count,
+#                 'sum_commissions': sum_commissions,
+#                 'work_types': work_types_list,
+#                 'drop_deal': drop_deal,
+#                 'deals': deals
+#             })
+#     # print(employees_list)
+#     return employees_list
+#
+
+
+
+def get_active_masters_info(wt=None, city=None):
+    emp_info = []
+    emps = models.Employees.objects.all().filter(active=1)
+    if wt:
+        emps.filter(employeesworktype=wt)
+    if city:
+        emps.filter(id_city=city)
+    for emp in emps.values():
+        print(emp)
+        referal_income = models.Employees.objects.all().filter(promo_id=emp['id']).aggregate(Count('promo_id'))['promo_id__count'] * 250
+        proped_deals_count = models.Deals.objects.all().filter(id_proped=emp['id'], status=4).aggregate(Count('id_proped'))['id_proped__count']
+        closed_deals_count = models.Deals.objects.all().filter(id_user=emp['id'], status=4).aggregate(Count('id_user'))['id_user__count']
+        droped_deals_count = models.Deals.objects.all().filter(id_user=emp['id'], status=-1).aggregate(Count('id_user'))['id_user__count']
+        if list(models.VeryFirst.objects.filter(id=emp['active']).values()) == []:
+            very_first = None
         else:
-            vf = '-'
-        employees_list.append(
+            very_first = 1
+        emp_info.append(
             {
-                'num': num,
                 'id': emp['id'],
-                'id_executor': emp['id_executor'],
-                'executor_type': emp['executor_type'],
+                'full_name': emp['full_name'],
                 'id_city': emp['id_city'],
-                'promo_id': emp['promo_id'],
-                'city': emp['city'],
-                'fio': emp['fio'],
-                'phone': emp['phone'],
-                'mail': emp['mail'],
-                'id_status': emp['id_status'],
-                'status': emp['status'],
-                'exclusive': emp['exclusive'],
-                'comment': emp['comment'],
-                'about_us': emp['about_us'],
+                'name_city': models.City.objects.filter(id=emp['id_city']).values('city')[0]['city'],
                 'reg_date': emp['reg_date'],
+                'phone': emp['phone'],
                 'balance': emp['balance'],
                 'bonuses': emp['bonuses'],
+                'exclusive': emp['exclusive'],
                 'active': emp['active'],
-                'very_first': vf,
-                'successful_deals': successful_deals_count,
-                'drop deals': drop_deals_count,
-                'sum_commissions': sum_commissions,
-                'work_types': work_types_list,
-                'drop_deal': drop_deal,
-                'deals': deals
-            })
-    # print(employees_list)
-    return employees_list
+                'very_first': very_first,
+                'referal_income': referal_income,
+                'proped_deals_count': proped_deals_count,
+                'closed_deals_count': closed_deals_count,
+                'droped_deals_count': droped_deals_count
+            }
+        )
+
+    return emp_info
+
+

@@ -279,7 +279,7 @@
 		                    <tr>
 		                      <td>{{ wt.type }}</td>
                               {% for city in cites %}
-                                  <th><a href="#">{{emp_ammount_in_cities|get_value_from_dict:city.id|get_value_from_dict:wt.id}}</a></th>
+                                  <th><a href="{% url 'pd_backend:am_url_wt_city' wt.id city.id %}">{{emp_ammount_in_cities|get_value_from_dict:city.id|get_value_from_dict:wt.id}}</a></th>
                               {% endfor %}
                                 <th><a href="#">{{active_by_wt|get_value_from_dict:wt.id}}</a></th>
                                 <th><a href="#">{{exclusive_by_wt|get_value_from_dict:wt.id}}</a></th>
