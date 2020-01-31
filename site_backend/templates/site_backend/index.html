@@ -217,7 +217,7 @@
             	<div class="card shadow mb-4">
 	                <!-- Card Header - Dropdown -->
 	                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-	                  <h6 class="m-0 font-weight-bold text-primary">🥇 Cамый первый</h6>
+                        <h6 class="m-0 font-weight-bold text-primary">🥇 <a href="{% url "site_backend:am_url_vf" %}">Cамый первый </a> </h6>
 	                </div>
 	                <!-- Card Body -->
 	                <div class="card-body">
@@ -236,12 +236,12 @@
 			                  <tbody>
                               {% for emp in very_first_emps %}
 			                    <tr>
-			                      <td>{{ emp.emp_data.0.full_name }}</td>
-			                      <td><a href=#>{{ emp.emp_data.0.phone }}</a></td>
-			                      <td><a href=#>{{emp.very_first_data.0.tariff}}</a></td>
-			                      <td><a href=#>{{ emp.very_first_data.0.date_start|date:'Y-m-d' }}</a></td>
-			                      <td><a href=#>{{ emp.very_first_data.0.date_end|date:'Y-m-d' }}</a></td>
-			                      <td><a href=#>{{ emp.very_first_data.0.price }}</a></td>
+			                      <td><a href="{% url "site_backend:master_card_url" emp.emp_data.0.id %}">{{ emp.emp_data.0.full_name }}</a></td>
+			                      <td>{{ emp.emp_data.0.phone }}</td>
+			                      <td>{{emp.very_first_data.0.tariff}}</td>
+			                      <td>{{ emp.very_first_data.0.date_start|date:'Y-m-d' }}</td>
+			                      <td>{{ emp.very_first_data.0.date_end|date:'Y-m-d' }}</td>
+			                      <td>{{ emp.very_first_data.0.price }}</td>
 			                    </tr>
                               {% endfor %}
 			                  </tbody>
@@ -279,10 +279,10 @@
 		                    <tr>
 		                      <td>{{ wt.type }}</td>
                               {% for city in cites %}
-                                  <th><a href="{% url 'pd_backend:am_url_wt_city' wt.id city.id %}">{{emp_ammount_in_cities|get_value_from_dict:city.id|get_value_from_dict:wt.id}}</a></th>
+                                  <th><a href="{% url 'site_backend:am_url_wt_city' wt.id city.id %}">{{emp_ammount_in_cities|get_value_from_dict:city.id|get_value_from_dict:wt.id}}</a></th>
                               {% endfor %}
-                                <th><a href="#">{{active_by_wt|get_value_from_dict:wt.id}}</a></th>
-                                <th><a href="#">{{exclusive_by_wt|get_value_from_dict:wt.id}}</a></th>
+                                <th><a href="{% url 'site_backend:am_url_wt_online' wt.id %}">{{active_by_wt|get_value_from_dict:wt.id}}</a></th>
+                                <th><a href="{% url 'site_backend:am_url_wt_exсlusive' wt.id %}">{{exclusive_by_wt|get_value_from_dict:wt.id}}</a></th>
 		                    </tr>
                             {% endfor %}
 

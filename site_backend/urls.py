@@ -22,6 +22,10 @@ urlpatterns = [
     path('', views.index_router, name='index_url'),
     path('directions/', views.directions_router, name='directions_url'),
     path('active_masters/', views.active_masters_router, name='am_url'),
-    path('active_masters?city=<int:city_id>;wt=<int:wt_id>/', views.active_masters_router, name='am_url_wt_city'),
+    path('active_masters?wt=<int:wt_id>;city=<int:city_id>/', views.active_master_wt_city, name='am_url_wt_city'),
+    path('active_masters?wt=<int:wt_id>;active=1/', views.active_master_online_wt, name='am_url_wt_online'),
+    path('active_masters?wt=<int:wt_id>;exclusive=1/', views.active_master_exclusive_wt, name='am_url_wt_exсlusive'),
+    path('active_masters?vf=1', views.active_master_vf, name='am_url_vf'),
+    path('master_card?id=<int:master_id>', views.master_card_router, name='master_card_url'),
 
 ]

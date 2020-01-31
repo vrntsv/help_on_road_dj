@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from . import services
+import json
+from django.core.serializers.json import DjangoJSONEncoder
+
 
 
 def index_router(request):
@@ -96,9 +99,39 @@ def active_masters_router(request):
     return HttpResponse(status=405)
 
 
-def active_master_wt_city(request, id_wt, id_city):
+def active_master_wt_city(request, wt_id, city_id):
     if request.method == 'GET':
         return render(request, 'site_backend/active_masters.html', {
-            'active_masters': services.get_active_masters_info()
+            'active_masters': services.get_active_masters_info(wt=wt_id, city=city_id)
         })
-# Create your views here.
+    return HttpResponse(status=405)
+
+
+def active_master_online_wt(request, wt_id):
+    if request.method == 'GET':
+        return render(request, 'site_backend/active_masters.html', {
+            'active_masters': services.get_active_masters_info(active=True, wt=wt_id)
+        })
+    return HttpResponse(status=405)
+
+
+def active_master_exclusive_wt(request, wt_id):
+    if request.method == 'GET':
+        return render(request, 'site_backend/active_masters.html', {
+            'active_masters': services.get_active_masters_info(exclusive=True, wt=wt_id)
+        })
+    return HttpResponse(status=405)
+
+
+def active_master_vf(request):
+    if request.method == 'GET':
+        return render(request, 'site_backend/active_masters.html', {
+            'active_masters': services.get_active_masters_info(vf=True)
+        })
+    return HttpResponse(status=405)
+
+
+def master_card_router(request, master_id):
+    if request.method == 'GET':
+        print(json.dumps(services.get_master_card_info(master_id), sort_keys=True, indent=1, cls=DjangoJSONEncoder))
+        return render(request, 'site_backend/master_card.html', {'info': services.get_master_card_info(master_id)} )

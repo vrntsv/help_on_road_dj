@@ -142,11 +142,11 @@ def get_employees_very_first():
     """
     full_data = []
     very_first_emps = models.VeryFirst.objects.values()
-    print(very_first_emps)
+    print('very_first_emps', very_first_emps)
     for very_first_data in very_first_emps:
         print('\n\n', very_first_data)
-        vf_data = models.VeryFirst.objects.filter(id=very_first_data['id']).values()
-        emp_data = models.Employees.objects.filter(id=very_first_data['id']).values()
+        vf_data = models.VeryFirst.objects.filter(id__veryfirst=very_first_data['id_id']).values()
+        emp_data = models.Employees.objects.filter(id=very_first_data['id_id']).values()
         full_data.append({'very_first_data': list(vf_data),
                           'emp_data': list(emp_data)})
         print(full_data)
@@ -166,23 +166,9 @@ def get_emp_ammount_in_cities():
     for city in cities:
         wt_data = {}
         for wt in work_types:
-            emps = models.Employees.objects.filter(id_city=city['id'], employeesworktype__id_work_type=wt['id'])
-            print(emps)
-            return emps
-            count = 0
-            emp_in_city = []
-            emp_with_wt = []
-            emp_in_city_dict = models.Employees.objects.filter(id_city=city['id']).values('id')
-            for emp in emp_in_city_dict:
-                emp_in_city.append(emp['id'])
-            emp_with_wt_dict = models.EmployeesWorkType.objects.filter(id_work_type=wt['id']).values('id_user')
-
-            for emp in emp_with_wt_dict:
-                emp_with_wt.append(emp['id_user'])
-            for emp in emp_with_wt:
-                if emp in emp_in_city:
-                    count += 1
-            wt_data.update({wt['id']: count})
+            emps_ammount = models.Employees.objects.filter(id_city=city['id'],
+                                                   employeesworktype__id_work_type=wt['id']).aggregate(Count('id'))['id__count']
+            wt_data.update({wt['id']: emps_ammount})
         data.update({city['id']: wt_data})
     return data
 
@@ -389,20 +375,30 @@ def get_online_ammount_wt():
 
 
 
-def get_active_masters_info(wt=None, city=None):
+def get_active_masters_info(wt=None, city=None, exclusive=None, active=None, vf=None):
     emp_info = []
-    emps = models.Employees.objects.all().filter(active=1)
+    emps = models.Employees.objects.all().filter(status=1)
     if wt:
-        emps.filter(employeesworktype=wt)
+        emps = emps.filter(employeesworktype__id_work_type=wt)
     if city:
-        emps.filter(id_city=city)
+        emps = emps.filter(id_city=city)
+    if exclusive:
+        emps = emps.filter(exclusive=1)
+    if active:
+        emps = emps.filter(active=1)
+
+
+    print('emps val', emps.values().__len__())
     for emp in emps.values():
-        print(emp)
+        if vf:
+            if list(models.VeryFirst.objects.filter(id=emp['id']).values()) == []:
+                print('vf')
+                continue
         referal_income = models.Employees.objects.all().filter(promo_id=emp['id']).aggregate(Count('promo_id'))['promo_id__count'] * 250
         proped_deals_count = models.Deals.objects.all().filter(id_proped=emp['id'], status=4).aggregate(Count('id_proped'))['id_proped__count']
         closed_deals_count = models.Deals.objects.all().filter(id_user=emp['id'], status=4).aggregate(Count('id_user'))['id_user__count']
         droped_deals_count = models.Deals.objects.all().filter(id_user=emp['id'], status=-1).aggregate(Count('id_user'))['id_user__count']
-        if list(models.VeryFirst.objects.filter(id=emp['active']).values()) == []:
+        if list(models.VeryFirst.objects.filter(id=emp['id']).values()) == []:
             very_first = None
         else:
             very_first = 1
@@ -427,5 +423,33 @@ def get_active_masters_info(wt=None, city=None):
         )
 
     return emp_info
+
+
+def get_emp_wt(master_id):
+    wt = models.EmployeesWorkType.objects.filter(id_user=master_id).values('id_work_type__type')
+    return wt
+
+def get_master_card_info(master_id):
+    user_data = models.Employees.objects.all().filter(id=master_id).values()
+    users_deals = models.Deals.objects.all().filter(id_user=master_id).values()
+    users_referal = models.Employees.objects.all().filter(promo_id=master_id).values('id', 'balance')
+    for user in users_referal:
+        deals_ammount = models.Deals.objects.all().filter(id_user=master_id).aggregate(Count('id'))['id__count']
+        user.update({'deals_ammount': deals_ammount})
+    users_session_history = models.UserSessionHistory.objects.all().filter(id=master_id).values()
+    users_transfers = models.UsersTransfers.objects.all().filter(id_user=master_id).values()
+
+    return {
+        'id': master_id,
+        'work_types': list(get_emp_wt(master_id)),
+        'city': models.City.objects.all().filter(id=user_data[0]['id_city']).values('city')[0]['city'],
+        'user_data': list(user_data),
+        'deals': list(users_deals),
+        'deals_len': list(users_deals).__len__(),
+        'proped_deals_ammount': models.Deals.objects.filter(id_proped=master_id).aggregate(Count('id_proped'))['id_proped__count'],
+        'referal': list(users_referal),
+        'sessions':  list(users_session_history),
+        'transfers': list(users_transfers),
+    }
 
 

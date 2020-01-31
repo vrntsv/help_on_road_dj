@@ -1,0 +1,385 @@
+{% load djutils %}
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>SB Admin 2 - Tables</title>
+
+  <!-- Custom fonts for this template -->
+  <link href="/static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="/static/css/sb-admin-2.min.css" rel="stylesheet">
+
+  <!-- Custom styles for this page -->
+  <link href="/static/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+  <script type="text/javascript" src="jquery.dataTables.js"></script>
+
+
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+        $('#example').DataTable( {
+            "order": [[ 3, "desc" ]]
+        } );
+    } );  
+  </script>
+
+</head>
+
+<body id="page-top">
+      <!-- Begin Page Content -->
+
+      <!-- /.container-fluid -->
+  <!-- USER info -->
+  <div class="row">
+    <!-- User card -->
+    <div class="container col col-sm-12 col-md-6 col-xl-6 col-lg-6">
+      <div class="card shadow mb-4">
+        <div class="card-header">
+          <!-- 👑 Если эксклюзив-->
+            {% with info|get_value_from_dict:'user_data' as user_data %}
+          <h2>Карточка {% if user_data.0|get_value_from_dict:'exclusive' %} 👑 {% endif %} #{{ info|get_value_from_dict:'id' }}</h2>
+        </div>
+        <div class="card-body">
+          <table class="table table-responsive">
+            <thead>
+              <tr>
+                <th>Дата регистрации</th>
+                <td>{{ user_data.0|get_value_from_dict:'reg_date' }}</td>
+              </tr>
+              <tr>
+                <th>ФИО</th>
+                <td>{{ user_data.0|get_value_from_dict:'full_name' }}</td>
+              </tr>
+              <tr>
+                <th>Город</th>
+                <td>{{ info|get_value_from_dict:'city' }}</td>
+              </tr>
+              <tr>
+                <th>Виды работ</th>
+                <td>
+                  <div class="btn-group">
+                    <a class="dropdown-toggle text" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Открыть</a>
+                    <div class="dropdown-menu">
+                      <label class="form-check-label">
+                          Направление 1
+                      </label>
+                      <label class="form-check-label">
+                          Направление 1
+                      </label>
+                      <label class="form-check-label">
+                          Направление 1
+                      </label>
+                      <label class="form-check-label">
+                          Направление 1
+                      </label>
+                      </div>
+                    </div>
+                </td>
+              </tr>
+              <tr>
+                <th>Телефон</th>
+                <td>{{ user_data.0|get_value_from_dict:'phone' }}</td>
+              </tr>
+              <tr>
+                <th>Откликов на заказы</th>
+                <td>{{ info|get_value_from_dict:'deals_len' }}</td>
+              </tr>
+              <tr>
+                <th>Предложено заказов</th>
+                <td>{{ info|get_value_from_dict:'proped_deals_ammount' }}</td>
+              </tr>
+            </thead>
+          </table>
+          <table class="table table-responsive">
+            <thead>
+              <tr>
+                <th>Как о нас узнал&?</th>
+                <td>{{ user_data.0|get_value_from_dict:'about_us' }}</td>
+              </tr>
+              <tr>
+                <!-- Если есть поле показывать -->
+                {% if user_data.0|get_value_from_dict:'promo_id' %}
+                    <th>Промо-код</th>
+                    <td>
+                      <a href="{% url "site_backend:master_card_url" user_data.0|get_value_from_dict:'promo_id' %}">{{user_data.0|get_value_from_dict:'promo_id'}}</a>
+                    </td>
+                {% endif %}
+              </tr>         
+              <tr>
+
+                <th scope="row">Комментарий</th>
+                <td>{{ user_data.0|get_value_from_dict:'comment' }}</td>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!--  Referal + session -->
+    {% endwith %}
+    <div class="container col col-sm-12 col-md-6 col-xl-6 col-lg-6">
+      <!-- User referal -->
+      <div class="card shadow mb-4">
+        <div class="card-header">
+          <!-- 👑 Если эксклюзив-->
+          <h2>Рефералы</h2>
+        </div>
+
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped" id='example' width="100%" cellspacing="0">
+              <thead>
+                <tr>
+                  <!-- 
+                    💳 / 💵 - нал/безнал
+                  -->
+                  <th>ID пользователя</th>
+                  <th>Кол-во сделок</th>
+                  <th>Баланс</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for r in referal %}
+
+                <tr>
+                  <!-- https://tehpomosh.amocrm.ru/leads/detail/23363851 пример ссылки по id сделки-->
+                  <td><a href="#">{{ r|get_value_from_dict:'id' }}</a></td>
+                  <td> <a href="#">{{ r|get_value_from_dict:'deals_ammount' }}</a> </td>
+                  <td>{{ r|get_value_from_dict:'balance' }}</td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- User session history  -->
+      <div class="card shadow mb-4">
+        <div class="card-header">
+          <!-- 👑 Если эксклюзив-->
+          <h2>История сессий пользователя </h2>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered"width="100%" cellspacing="0">
+              <thead>
+                <tr>
+                  <!-- 
+                    💳 / 💵 - нал/безнал
+                  -->
+                  <th>Дата</th>
+                  <th>Начало</th>
+                  <th>Конец</th>
+                  <th>Длительность</th>
+                </tr>
+              </thead>
+              <tbody>
+               {% with info|get_value_from_dict:'sessions' as sessions %}
+                {% for s in sessions %}
+                <tr>
+
+                  <!-- https://tehpomosh.amocrm.ru/leads/detail/23363851 пример ссылки по id сделки-->
+                  <th>{{ s|get_value_from_dict:'date' }}</th>
+                  <th>{{ s|get_value_from_dict:'start_session' }}</th>
+                  <th>{{ s|get_value_from_dict:'end_session' }}</th>
+                  <th>{{ s|get_value_from_dict:'long_session' }}</th>
+                </tr>
+                {% endfor %}
+              {% endwith %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Balance -->
+  <div class="row">
+    <div class="container col col-sm-12 col-md-6 col-xl-6 col-lg-6">
+      <div class="card shadow mb-4">
+        <div class="card-header">
+          <!-- 👑 Если эксклюзив-->
+            {% with info|get_value_from_dict:'user_data' as user_data %}
+                <h2 class='text-center'>Баланс {{ user_data.0|get_value_from_dict:'balance' }} ₽</h2>
+            {% endwith %}
+        </div>
+        <div class="card-body">
+          <div class="btn-group col">
+            <button class="btn btn-success " type="submit">Пополнить</button> 
+            <button class="btn btn-danger "type="submit">Списать</button> 
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container col col-sm-12 col-md-6 col-xl-6 col-lg-6">
+      <div class="card shadow mb-4">
+        <div class="card-header">
+          <!-- 👑 Если эксклюзив-->
+          <h2>История баланса</h2>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered" width="100%" cellspacing="0">
+              <thead>
+                <tr>
+                  <th>Сумма</th>
+                  <th>Дата</th>
+                  <th data-toggle="tooltip" data-placement="right" title="На момент сделки">Баланс</th>
+                  <th>Описание</th>
+              </thead>
+
+              <tbody>
+              {% with info|get_value_from_dict:'transfers' as transfers %}
+                {% for t in transfers %}
+                <tr>
+                  <th>{{t|get_value_from_dict:'ammount'}}</th>
+                  <th>{{t|get_value_from_dict:'date'}}</th>
+                  <th>{{t|get_value_from_dict:'balance'}}</th>
+                  <th>{{t|get_value_from_dict:'comment'}}</th>
+                </tr>
+               {% endfor %}
+              {% endwith %}
+              </tbody>
+            </table>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+    <!-- Deals history -->
+  <div class="row">
+      <div class="card shadow col">
+        <div class="card-header">
+          <h2>История заказов</h2>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+              <thead>
+                <tr>
+                  <!-- 
+                    💳 / 💵 - нал/безнал
+                  -->
+                  <th>Дата</th>
+                  <th>ID сделки</th>
+                  <th>Тип</th>
+                  <th>Процент</th>
+                  <th>Цена от исполнителя</th>
+                  <th>Наша коммиссия</th>
+                  <th>Зачислено</th>
+                  <th>Партнер</th>
+                  <th>Статус</th>
+                  <th>Комментарий</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% with info|get_value_from_dict:'deals' as deals %}
+              {% for deal in deals %}
+
+                <tr>
+                  <!-- https://tehpomosh.amocrm.ru/leads/detail/23363851 пример ссылки по id сделки-->
+                  <td>{{ deal|get_value_from_dict:'date' }}</td>
+                  <td>{{ deal|get_value_from_dict:'id' }}</td>
+
+                  <td class=" text-center" data-toggle="tooltip" data-placement="right" title="💳 - БЕЗналичные/💵- наличные">{% if deal|get_value_from_dict:'self_employeed' %}💳{% else %}💵{% endif %}</td>
+                  <td>{{ deal|get_value_from_dict:'commission_precent' }}%</td>
+                  <td >{{ deal|get_value_from_dict:'value' }} ₽</td>
+                {% with  value=deal|get_value_from_dict:'value' percent=deal|get_value_from_dict:'commission_precent' %}
+                  <td class="text-success">{{ value|count_percent:percent }} ₽</td>
+                  <td class="text-danger">{{ value|count_user_percent:percent }} ₽</td>
+                {% endwith %}
+                  <td> {% if deal|get_value_from_dict:'id_proped' %}<a href="{% url "site_backedn:master_card_url" deal|get_value_from_dict:'id_proped' %}">{{deal|get_value_from_dict:'id_proped'}}</a> {% else %} - {% endif %}</td>
+                  <td class=" text-center" >
+                    <div class="btn-group">
+                      <button class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Оплачено</button>
+                      <div class="dropdown-menu">
+                        <button class="btn bg-info text-white dropdown-item" >Списать</button>
+                        <button class="btn bg-warning text-white dropdown-item" >Вернуть</button>
+                      </div>
+                    </div>
+                  </td>
+                  <td> {% if deal|get_value_from_dict:'comment' %}{{deal|get_value_from_dict:'comment'}} {% else %} - {% endif %}</td>
+                </tr>
+                <tr>
+                                  {% endfor %}
+              {% endwith %}
+                  <!-- https://tehpomosh.amocrm.ru/leads/detail/23363851 пример ссылки по id сделки-->
+                  <td>22.14.2019</td>
+                  <td> <a href="#">999999</a> </td>
+                  <td class=" text-center" data-toggle="tooltip" data-placement="right" title="💳 - БЕЗналичные/💵- наличные">💳</td>
+                  <td>40%</td>
+                  <td >2000 ₽</td>
+                  <td class="text-success">10000 ₽</td>
+                  <td class="text-danger">100 ₽</td>
+                  <td></td>
+                  <td class=" text-center">
+                    <div class="btn-group">
+                      <button class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Сорвано</button>
+                      <div class="dropdown-menu">
+                        <button class="btn bg-info text-white dropdown-item" >Списать</button>
+                        <button class="btn bg-warning text-white dropdown-item" >Вернуть</button>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td><a href="#"></a></td>
+                </tr>
+                <tr>
+                  <!-- https://tehpomosh.amocrm.ru/leads/detail/23363851 пример ссылки по id сделки-->
+                  <td>22.14.2019</td>
+                  <td> <a href="#">999999</a> </td>
+                  <td class=" text-center" data-toggle="tooltip" data-placement="right" title="💳 - БЕЗналичные/💵- наличные">💵</td>
+                  <td>40%</td>
+                  <td >2000 ₽</td>
+                  <td class="text-success">10000 ₽</td>
+                  <td class="text-danger">100 ₽</td>
+                  <td><a href="#">999999</a></td>
+                  <td class='text-warning text-center font-weight-bold'>В работе
+     
+                  </td>
+
+                  <td><a href="#"></a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+  </div>
+  <!-- End of Page Wrapper -->
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="/static/vendor/jquery/jquery.min.js"></script>
+  <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="/static/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="/static/js/sb-admin-2.min.js"></script>
+
+  <!-- Page level plugins -->
+  <script src="/static/vendor/datatables/jquery.dataTables.min.js"></script>
+  <script src="/static/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+  <!-- Page level custom scripts -->
+  <script src="/static/js/demo/datatables-demo.js"></script>
+
+</body>
+
+</html>

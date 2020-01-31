@@ -66,7 +66,7 @@
                         <tr>
                           <td>{{ emp|get_value_from_dict:'name_city' }}</td>
                           <td>{% if emp|get_value_from_dict:'exclusive' == 1 %} 👑 {% endif %}
-                              {{emp|get_value_from_dict:'full_name'}}
+                              <a href="{% url "site_backend:master_card_url"  emp|get_value_from_dict:'id' %}">{{emp|get_value_from_dict:'full_name'}}</a>
                           {% if emp|get_value_from_dict:'active' == 1 %} ✅ {% else %} ❌ {% endif %}
                           {% if emp|get_value_from_dict:'very_first' %} 🥇 {% endif %} </td>
                           <td>{{emp|get_value_from_dict:'phone'}}</td>

@@ -100,36 +100,6 @@ class DealQuestions(models.Model):
         db_table = 'deal_questions'
 
 
-class Deals(models.Model):
-    id = models.BigIntegerField(primary_key=True)
-    id_user = models.BigIntegerField(blank=True, null=True)
-    id_proped = models.BigIntegerField(blank=True, null=True)
-    id_work_type = models.IntegerField()
-    description = models.TextField()
-    model_auto = models.CharField(max_length=255)
-    phone = models.CharField(max_length=25)
-    date_filing = models.DateTimeField(blank=True, null=True)
-    address = models.CharField(max_length=255, blank=True, null=True)
-    date = models.DateTimeField()
-    date_accept = models.DateTimeField(blank=True, null=True)
-    date_drop = models.DateTimeField(blank=True, null=True)
-    last_change_stage = models.TimeField(blank=True, null=True)
-    value = models.IntegerField()
-    money_on_balance = models.IntegerField()
-    current_stage = models.IntegerField()
-    commission_precent = models.IntegerField(blank=True, null=True)
-    commission = models.IntegerField(blank=True, null=True)
-    status = models.IntegerField()
-    comment = models.TextField(blank=True, null=True)
-    id_city = models.SmallIntegerField()
-    price = models.CharField(max_length=100, blank=True, null=True)
-    date_completion = models.DateTimeField(blank=True, null=True)
-    self_employeed = models.IntegerField(blank=True, null=True)
-    geo_cord = models.CharField(max_length=255, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'deals'
 
 
 class Employees(models.Model):
@@ -220,7 +190,7 @@ class Operators(models.Model):
 
 
 class PropedDeals(models.Model):
-    proped_id_user = models.BigIntegerField()
+    proped_id_user = models.ForeignKey(Employees, to_field='id', db_column='id_user',  on_delete=models.DO_NOTHING)
     id_deal = models.BigIntegerField()
 
     class Meta:
@@ -257,7 +227,7 @@ class TemplateTexts(models.Model):
 
 
 class UserSessionHistory(models.Model):
-    id = models.BigIntegerField(primary_key=True)
+    id = models.ForeignKey(Employees, to_field='id', db_column='id',  on_delete=models.DO_NOTHING, primary_key=True)
     date = models.DateField(blank=True, null=True)
     start_session = models.TimeField(blank=True, null=True)
     end_session = models.TimeField(blank=True, null=True)
@@ -269,7 +239,7 @@ class UserSessionHistory(models.Model):
 
 
 class UsersHistory(models.Model):
-    id_user = models.BigIntegerField()
+    id_user = models.ForeignKey(Employees, to_field='id', db_column='id_user',  on_delete=models.DO_NOTHING)
     date = models.DateTimeField()
     text = models.TextField()
 
@@ -279,7 +249,7 @@ class UsersHistory(models.Model):
 
 
 class UsersTransfers(models.Model):
-    id_user = models.BigIntegerField()
+    id_user = models.BigIntegerField(primary_key=True)
     date = models.DateTimeField()
     ammount = models.CharField(max_length=100)
     comment = models.CharField(max_length=255, blank=True, null=True)
@@ -291,7 +261,7 @@ class UsersTransfers(models.Model):
 
 
 class VeryFirst(models.Model):
-    id = models.BigIntegerField(primary_key=True)
+    id = models.ForeignKey('Employees', models.DO_NOTHING, db_column='id', primary_key=True)
     date_start = models.DateTimeField()
     date_end = models.DateTimeField()
     tariff = models.CharField(max_length=50)
@@ -302,8 +272,40 @@ class VeryFirst(models.Model):
         db_table = 'very_first'
 
 
+
+class Deals(models.Model):
+    id = models.BigIntegerField(primary_key=True)
+    id_user = models.ForeignKey(Employees, to_field='id', db_column='id_user',  on_delete=models.DO_NOTHING)
+    id_proped = models.BigIntegerField(blank=True, null=True)
+    id_work_type = models.IntegerField()
+    description = models.TextField()
+    model_auto = models.CharField(max_length=255)
+    phone = models.CharField(max_length=25)
+    date_filing = models.DateTimeField(blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
+    date = models.DateTimeField()
+    date_accept = models.DateTimeField(blank=True, null=True)
+    date_drop = models.DateTimeField(blank=True, null=True)
+    last_change_stage = models.TimeField(blank=True, null=True)
+    value = models.IntegerField()
+    money_on_balance = models.IntegerField()
+    current_stage = models.IntegerField()
+    commission_precent = models.IntegerField(blank=True, null=True)
+    commission = models.IntegerField(blank=True, null=True)
+    status = models.IntegerField()
+    comment = models.TextField(blank=True, null=True)
+    id_city = models.SmallIntegerField()
+    price = models.CharField(max_length=100, blank=True, null=True)
+    date_completion = models.DateTimeField(blank=True, null=True)
+    self_employeed = models.IntegerField(blank=True, null=True)
+    geo_cord = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'deals'
+
 class WorkType(models.Model):
-    id_field = models.IntegerField()
+    id_field = models.IntegerField(unique=True)
     type = models.CharField(unique=True, max_length=126)
     active = models.IntegerField()
     comm_stage_0 = models.SmallIntegerField()
@@ -318,3 +320,13 @@ class WorkType(models.Model):
     class Meta:
         managed = False
         db_table = 'work_type'
+
+
+class EmployeesWorkType(models.Model):
+    id_user = models.ForeignKey(Employees, to_field='id', db_column='id_user',  on_delete=models.DO_NOTHING, primary_key=True)
+    id_work_type = models.ForeignKey(WorkType, to_field='id_field', db_column='id_work_type',  on_delete=models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'employees_work_type'
+        unique_together = (('id_user', 'id_work_type'),)
