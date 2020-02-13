@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load djutils %}
+{% load custom_filters %}
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>SB Admin 2 - Tables</title>
+
+  <!-- Custom fonts for this template -->
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="/static/css/sb-admin-2.min.css" rel="stylesheet">
+
+  <!-- Custom styles for this page -->
+  <link href="/static/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+
+  <!-- Page Wrapper -->
+  <div id="wrapper">
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+      <!-- Main Content -->
+      <div id="content">
+        <!-- Begin Page Content -->
+        <div class="row">
+            <div class="container-fluid">
+              <!-- DataTales Example -->
+              <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h4 class="m-0 font-weight-bold text-primary">Активные операторы</h4>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table table-bordered" width="100%" cellspacing="0">
+                      <thead>
+                        <tr>
+                          <th>Город</th>
+                          <th>Виды работ</th>
+                          <th>ФИО</th>
+                          <th>Телефон</th>
+                          <th>Источник</th>
+                          <th>Дата регистрации</th>
+                          <th>Промокод</th>
+                          <th>Подтверждения</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {% for emp in employees %}
+                          <form action="{% url 'site_backend:registration_url' %}" method="post">
+                        <tr>
+                          <th>
+                            <select name="company" class="form-control" required>
+                                <option value="id_города">{{ emp|get_value_from_dict:'emp_data'|get_value_from_dict:'id_city'|get_city_name }}</option>
+                            </select>
+                          </th>
+                          <th>
+                            <div class="btn-group">
+                              <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Открыть</button>
+                              <div class="dropdown-menu">
+                                  {% for wt in wt_list %}
+                                      {% if wt|get_value_from_dict:'id' in emp|get_value_from_dict:'emp_wt' %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="{{ wt|get_value_from_dict:'id' }}" name="emp_wt" id="defaultCheck1" checked>
+                                            <label class="form-check-label" for="defaultCheck1">
+                                                {{ wt|get_value_from_dict:'id'|get_wt_name }}
+                                            </label>
+                                            </div>
+                                      {% else %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="{{ wt|get_value_from_dict:'id' }}" name="emp_wt" id="defaultCheck1" >
+                                            <label class="form-check-label" for="defaultCheck1">
+                                                {{ wt|get_value_from_dict:'id'|get_wt_name }}
+                                            </label>
+                                            </div>
+                                      {% endif %}
+                                    {% endfor %}
+
+                              </div>
+                            </div>
+                          </th>
+                          <th>
+                            <div class="btn-group">
+                              <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ emp|get_value_from_dict:'emp_data'|get_value_from_dict:'full_name'}}</a>
+                              <div class="dropdown-menu">
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="first_order" id="exampleRadios1" value="yes" >
+                                  <label class="form-check-label" for="exampleRadios1">
+                                    🎁 1 заказ
+                                  </label>
+                                </div>
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="exclusive" id="exampleRadios1" value="yes">
+                                  <label class="form-check-label" for="exampleRadios1">
+                                    👑 Эксклюзив
+                                  </label>
+                                </div>
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="no_bonuses" id="exampleRadios1" value="yes" checked>
+                                  <label class="form-check-label" for="exampleRadios1">
+                                    Нет
+                                  </label>
+                                </div>
+
+                              </div>
+                            </div>
+                          </th>
+                          <th>{{ emp|get_value_from_dict:'emp_data'|get_value_from_dict:'phone'  }}</th>
+                          <th>{{ emp|get_value_from_dict:'emp_data'|get_value_from_dict:'about_us' }}</th>
+                          <th>{{ emp|get_value_from_dict:'emp_data'|get_value_from_dict:'reg_date' }}</th>
+                          <th><a href="">{{ emp|get_value_from_dict:'emp_data'|get_value_from_dict:'promo_id' }}</a></th>
+                          <th>
+                            <button type="submit" name="confirm" value="yes" class='col btn btn btn-success'>Подтвердить</button>
+                            <button type="submit" name="confirm" value="no"  class='col btn btn btn-danger'>Удалить</button>
+                          </th>
+                        </tr>
+                          </form>
+                      {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+      </div>
+      <!-- End of Main Content -->
+    </div>
+    <!-- End of Content Wrapper -->
+  </div>
+
+  <!-- End of Page Wrapper -->
+
+  <!-- Scroll to Top Button-->
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
+
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="/static/vendor/jquery/jquery.min.js"></script>
+  <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="/static/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="/static/js/sb-admin-2.min.js"></script>
+
+  <!-- Page level plugins -->
+  <script src="/static/vendor/datatables/jquery.dataTables.min.js"></script>
+  <script src="/static/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+  <!-- Page level custom scripts -->
+  <script src="/static/js/demo/datatables-demo.js"></script>
+
+</body>
+
+</html>

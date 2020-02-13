@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from . import services
 import json
@@ -133,5 +134,25 @@ def active_master_vf(request):
 
 def master_card_router(request, master_id):
     if request.method == 'GET':
-        print(json.dumps(services.get_master_card_info(master_id), sort_keys=True, indent=1, cls=DjangoJSONEncoder))
-        return render(request, 'site_backend/master_card.html', {'info': services.get_master_card_info(master_id)} )
+        #print(json.dumps(services.get_master_card_info(master_id), sort_keys=True, indent=1, cls=DjangoJSONEncoder))
+        print(services.get_emp_wt(master_id))
+        return render(request, 'site_backend/master_card.html', {
+            'info': services.get_master_card_info(master_id),
+            #'emp_wts': services.get_emp_wt(ma)
+                                                                 })
+    return HttpResponse(status=405)
+
+
+@csrf_exempt
+def registration_router(request):
+    if request.method == 'GET':
+        print(services.get_not_registered_masters())
+        return render(request, 'site_backend/register.html',
+                      {
+                          'employees': services.get_not_registered_masters(),
+                          'wt_list': services.get_wt_list(),
+                      })
+    elif request.method == 'POST':
+        print('\n\nMETHOD POST', request.POST)
+    return HttpResponse(status=405)
+

@@ -75,16 +75,9 @@
                     <a class="dropdown-toggle text" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Открыть</a>
                     <div class="dropdown-menu">
                       <label class="form-check-label">
-                          Направление 1
-                      </label>
-                      <label class="form-check-label">
-                          Направление 1
-                      </label>
-                      <label class="form-check-label">
-                          Направление 1
-                      </label>
-                      <label class="form-check-label">
-                          Направление 1
+                          {% for wt in info|get_value_from_dict:'work_types' %}
+                              {{ wt|get_wt_name }}
+                          {% endfor %}
                       </label>
                       </div>
                     </div>

@@ -426,8 +426,30 @@ def get_active_masters_info(wt=None, city=None, exclusive=None, active=None, vf=
 
 
 def get_emp_wt(master_id):
-    wt = models.EmployeesWorkType.objects.filter(id_user=master_id).values('id_work_type__type')
+    wt = models.EmployeesWorkType.objects.filter(id_user=master_id).values('id_work_type_id')
     return wt
+
+
+def get_not_registered_masters():
+    full_data = []
+    emp_data = models.Employees.objects.filter(status=0).values()
+    for emp in emp_data:
+        wt_list = []
+        wt = models.EmployeesWorkType.objects.filter(id_user=emp['id']).values('id_work_type_id')
+        for i in wt:
+            wt_list.append(i['id_work_type_id'])
+        full_data.append(
+            {
+                'emp_data': emp,
+                'emp_wt': wt_list,
+            }
+        )
+    return full_data
+
+
+def get_wt_list():
+    return models.WorkType.objects.all().values()
+
 
 def get_master_card_info(master_id):
     user_data = models.Employees.objects.all().filter(id=master_id).values()

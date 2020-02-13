@@ -304,6 +304,7 @@ class Deals(models.Model):
         managed = False
         db_table = 'deals'
 
+
 class WorkType(models.Model):
     id_field = models.IntegerField(unique=True)
     type = models.CharField(unique=True, max_length=126)
