@@ -146,13 +146,29 @@ def master_card_router(request, master_id):
 @csrf_exempt
 def registration_router(request):
     if request.method == 'GET':
-        print(services.get_not_registered_masters())
         return render(request, 'site_backend/register.html',
                       {
                           'employees': services.get_not_registered_masters(),
                           'wt_list': services.get_wt_list(),
                       })
     elif request.method == 'POST':
-        print('\n\nMETHOD POST', request.POST)
+        if request.POST['confirm'] == 'yes':
+            print(request.POST)
+            services.add_emp(request.POST.get('emp_id'), request.POST.get('emp_wt'))
+            return render(request, 'site_backend/register.html',
+                          {
+                              'employees': services.get_not_registered_masters(),
+                              'wt_list': services.get_wt_list(),
+                          })
+        else:
+            print(request.POST)
+            services.freeze_emp(request.POST.get('emp_id'))
+            return render(request, 'site_backend/register.html',
+                          {
+                              'employees': services.get_not_registered_masters(),
+                              'wt_list': services.get_wt_list(),
+                              'freeze_id': request.POST.get('emp_id'),
+                          })
+
     return HttpResponse(status=405)
 

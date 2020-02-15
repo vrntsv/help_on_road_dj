@@ -447,6 +447,27 @@ def get_not_registered_masters():
     return full_data
 
 
+def freeze_emp(emp_id):
+    emp = models.Employees.objects.get(id=emp_id)
+    emp.status = -1
+    emp.save()
+
+
+def add_emp(emp_id, wt_data):
+    emp = models.Employees.objects.get(id=emp_id)
+    emp.status = 1
+    emp.save()
+    print(wt_data)
+    for wt_id in wt_data:
+        print(wt_id, '\n')
+        try:
+            wt = models.EmployeesWorkType(id_user=models.Employees.objects.get(id=emp_id),
+                                          id_work_type=models.WorkType.objects.get(id=wt_id))
+            wt.save()
+        except Exception as e:
+            print(e)
+
+
 def get_wt_list():
     return models.WorkType.objects.all().values()
 
