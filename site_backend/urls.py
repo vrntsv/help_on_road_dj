@@ -28,5 +28,7 @@ urlpatterns = [
     path('active_masters?vf=1', views.active_master_vf, name='am_url_vf'),
     path('master_card?id=<int:master_id>', views.master_card_router, name='master_card_url'),
     path('registration', views.registration_router, name='registration_url'),
+    path('operators', views.operators_router, name='operators_url'),
+    path('operators?delete=<int:operator_id>', views.operators_delete_router, name='operators_delete_url'),
 
 ]

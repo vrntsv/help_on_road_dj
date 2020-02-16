@@ -181,6 +181,7 @@ class NewUsersWithSales(models.Model):
 
 
 class Operators(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
     token = models.CharField(unique=True, max_length=100)
 

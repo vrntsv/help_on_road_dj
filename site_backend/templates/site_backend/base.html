@@ -47,10 +47,10 @@
         <a class="nav-link" href="index.html">
           <i class="fas fa-fw"></i>
           <span>История</span></a>
-        <a class="nav-link" href="/directions">
+        <a class="nav-link" href="{% url 'site_backend:directions_url' %}">
           <i class="fas fa-fw"></i>
           <span>Направления</span></a>
-        <a class="nav-link" href="index.html">
+        <a class="nav-link" href="{% url 'site_backend:operators_url' %}">
           <i class="fas fa-fw"></i>
           <span>Операторы</span></a>
 
@@ -68,6 +68,21 @@
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
           <i class="fas fa-fw fa-user"></i>
+          <span>Клиенты</span>
+        </a>
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <a class="collapse-item" href="{% url 'site_backend:am_url' %}">Активные</a>
+            <a class="collapse-item" href="{% url 'site_backend:registration_url' %}">Регистрация</a>
+          </div>
+        </div>
+      </li>
+
+
+              <!-- Nav Item - Pages Collapse Menu -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+          <i class="fas fa-fw fa-user"></i>
           <span>Пользователи</span>
         </a>
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
@@ -79,7 +94,6 @@
           </div>
         </div>
       </li>
-
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">

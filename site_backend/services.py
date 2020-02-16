@@ -1,6 +1,7 @@
 from . import models
 from django.db.models import Sum, Count
 import datetime
+from django.contrib.auth.models import User
 from datetime import date, timedelta
 
 
@@ -466,6 +467,37 @@ def add_emp(emp_id, wt_data):
             wt.save()
         except Exception as e:
             print(e)
+
+
+def create_operator(name, token):
+    try:
+        operator_auth = User.objects.create_user(username=name, password=token)
+        operator_data = models.Operators(name=name, token=token)
+        operator_auth.save()
+        operator_data.save()
+        return True
+    except Exception:
+        return False
+
+
+def get_operators():
+    data = []
+    data = {
+        'operator_data': models.Operators.objects.all().values(),
+        'auth_data': User.objects.all().filter(is_superuser=0).values()
+    }
+    return data
+
+
+def delete_operator(operator_id):
+    try:
+        operator_data = models.Operators.objects.get(id=operator_id)
+        operator_auth = User.objects.get(id=operator_id)
+        operator_data.delete()
+        operator_auth.delete()
+        return True
+    except Exception:
+        return False
 
 
 def get_wt_list():

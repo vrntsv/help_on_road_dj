@@ -172,3 +172,38 @@ def registration_router(request):
 
     return HttpResponse(status=405)
 
+
+@csrf_exempt
+def operators_router(request):
+    if request.method == 'GET':
+        print(services.get_operators())
+        return render(request, 'site_backend/operators.html',
+                      {
+                        'operators': services.get_operators()
+                      })
+    elif request.method == 'POST':
+        is_created = services.create_operator(request.POST.get('name'), request.POST.get('value'))
+        # если is_created=True - выводит сообщение об успехе
+        # если is_created=False - выводит сообщение об ошибке
+        return render(request, 'site_backend/operators.html',
+                      {
+                          'operators': services.get_operators(),
+                          'is_created': is_created
+                      }
+
+        )
+
+
+def operators_delete_router(request, operator_id):
+    if request.method == 'POST':
+        is_deleted = services.delete_operator(operator_id)
+        # если is_deleted=True - выводит сообщение об успехе
+        # если is_deleted=False - выводит сообщение об ошибке
+        return render(request, 'site_backend/operators.html',
+                      {
+                          'operators': services.get_operators(),
+                          'is_deleted': is_deleted
+                      }
+        )
+    else:
+        return HttpResponse(status=405)
