@@ -207,3 +207,19 @@ def history_router(request):
                             'history': services.get_history()
                       })
     return HttpResponse(status=405)
+
+
+def clients_router(request):
+    if request.method == 'GET':
+        return render(request, 'site_backend/client.html',
+                        {
+                            'clients': services.get_clients()
+                        })
+    elif request.method == 'POST':
+        print(request.POST)
+        print('teststset')
+        return render(request, 'site_backend/client.html',
+                        {
+                            'clients': services.get_clients()
+                        })
+    return HttpResponse(status=405)
