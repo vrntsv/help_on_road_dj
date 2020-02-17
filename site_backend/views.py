@@ -8,14 +8,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 
 
 def index_router(request):
-    # sum_transfer = services.get_sum_transfer_by_date()
-    # spent_transfer = services.get_spent_transfer_by_date()
-    # left_transfer = services.get_left_transfer()
-    # sum_proped = services.get_sum_proped()
-    # sum_bonuses = services.get_sum_bonuses()
-    # sum_promo = services.get_sum_promo()
     if request.method == 'GET':
-        print('test', services.get_emp_ammount_in_cities())
         return render(request, 'site_backend/index.html',
                       {
                           'sum_very_first': services.get_sum_very_first(),
@@ -35,10 +28,8 @@ def index_router(request):
                        }
                       )
     elif request.method == 'POST':
-        print('post')
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
-        print(start_date, end_date)
         if start_date != '' and end_date != '':
             return render(request, 'site_backend/index.html',
                           {
@@ -93,7 +84,6 @@ def directions_router(request):
 
 def active_masters_router(request):
     if request.method == 'GET':
-        print('am info', services.get_active_masters_info())
         return render(request, 'site_backend/active_masters.html', {
             'active_masters': services.get_active_masters_info()
         })
@@ -207,3 +197,13 @@ def operators_delete_router(request, operator_id):
         )
     else:
         return HttpResponse(status=405)
+
+
+def history_router(request):
+    if request.method == 'GET':
+        print(services.get_history())
+        return render(request, 'site_backend/history.html',
+                      {
+                            'history': services.get_history()
+                      })
+    return HttpResponse(status=405)

@@ -30,5 +30,6 @@ urlpatterns = [
     path('registration', views.registration_router, name='registration_url'),
     path('operators', views.operators_router, name='operators_url'),
     path('operators?delete=<int:operator_id>', views.operators_delete_router, name='operators_delete_url'),
+    path('history', views.history_router, name='history_url'),
 
 ]

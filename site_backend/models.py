@@ -240,7 +240,7 @@ class UserSessionHistory(models.Model):
 
 
 class UsersHistory(models.Model):
-    id_user = models.ForeignKey(Employees, to_field='id', db_column='id_user',  on_delete=models.DO_NOTHING)
+    id_user = models.ForeignKey(Employees, to_field='id', db_column='id_user',  on_delete=models.DO_NOTHING, primary_key=True)
     date = models.DateTimeField()
     text = models.TextField()
 

@@ -528,3 +528,5 @@ def get_master_card_info(master_id):
     }
 
 
+def get_history():
+    return models.UsersHistory.objects.all().values()
