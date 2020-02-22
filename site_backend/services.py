@@ -130,6 +130,7 @@ def get_work_types():
                 'comm_stage_4': wt['comm_stage_4'],
                 'comm_stage_5': wt['comm_stage_5'],
                 'comm_stage_6': wt['comm_stage_6'],
+                'excl_type': wt['excl_type'],
                 'post_pay': wt['post_pay']
             })
     print(directions)
