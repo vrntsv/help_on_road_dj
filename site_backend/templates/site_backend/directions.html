@@ -213,23 +213,24 @@
                                 </div>
                                 <div class="custom-control custom-switch">
                                     {% if wt.post_pay %}
-                                        <input type="checkbox" class="custom-control-input" id="post_pay" name="post_pay" checked>
+                                        <input type="checkbox" class="custom-control-input" id="post_pay" value="on" name="post_pay" checked>
                                         <label class="custom-control-label" for="post_pay"> Пост-оплата </label>
                                     {% else %}
-                                        <input type="checkbox" class="custom-control-input" id="post_pay"  name="post_pay" >
+                                        <input type="checkbox" class="custom-control-input" id="post_pay" value="off" name="post_pay" >
                                         <label class="custom-control-label" for="post_pay"> Пост-оплата </label>
                                     {% endif %}
                                 </div>
 
                                 <div class="custom-control custom-switch">
                                     {% if wt.excl_type %}
-                                        <input type="checkbox" class="custom-control-input" id="excl_type"  name="excl_type" checked>
+                                        <input type="checkbox" class="custom-control-input" id="excl_type" value="on" name="excl_type" checked>
                                         <label class="custom-control-label" for="excl_type"> Универсалы </label>
                                     {% else %}
-                                        <input type="checkbox" class="custom-control-input" id="excl_type"  name="excl_type" >
+                                        <input type="checkbox" class="custom-control-input" id="excl_type" value="off" name="excl_type" >
                                         <label class="custom-control-label" for="excl_type"> Универсалы </label>
                                     {% endif %}
                                 </div>
+
                               </div>
                               <br>
                             </div>

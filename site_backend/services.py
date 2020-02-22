@@ -138,7 +138,7 @@ def get_work_types():
 
 
 def change_wt(wt_id, wt_data):
-    print(wt_data)
+    print('tqtwet', wt_data)
     wt = models.WorkType.objects.get(id=wt_id)
     wt.type = wt_data['type']
     wt.comm_stage_0 = wt_data['step0']
@@ -149,12 +149,12 @@ def change_wt(wt_id, wt_data):
     wt.comm_stage_5 = wt_data['step5']
     wt.comm_stage_6 = wt_data['step6']
 
-    if wt_data['post_pay'] == 'on':
+    if 'post_pay' in wt_data.keys():
         wt.post_pay = 1
     else:
         wt.post_pay = None
 
-    if wt_data['excl_type'] == 'on':
+    if 'excl_type' in wt_data.keys():
         wt.excl_type = 1
     else:
         wt.excl_type = None
