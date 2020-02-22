@@ -86,7 +86,7 @@
 		                    </div>
 		                    <div class="form-group col-lg-4">
 		                      <input type="number" class="form-control" name="step_6" placeholder="6 этап" required>
-		                    </div>
+		                    </div>                    
 		                  </div>
 		                  <button  type="submit" class="col my-auto btn btn-primary">Добавить</button>
 		                </form>
@@ -148,7 +148,7 @@
 					                      <th>{{ wt.comm_stage_6 }}</th>
 					                      <th>{% if wt.post_pay  %} ✅ {% else %} ❎ {% endif %}</th>
 					                      <!-- назови переменную -->
-					                      <th>{% if wt.excl_type  %} ✅ {% else %} ❎ {% endif %}</th>
+					                      <th>{% if wt.post_pay  %} ✅ {% else %} ❎ {% endif %}</th>
 	                                        <th>
 					                        <button  type="submit" data-toggle="modal" data-target="#wt-{{ wt.id }}"  class="col my-auto btn bg-gray-200">Редактировать</button>
 					                        <button  type="submit" class="col my-auto btn btn-danger">Удалить</button>
@@ -171,78 +171,61 @@
 	    <!-- End of Content Wrapper -->
 
    	{% for wt in work_types %}
-        <form  method="post" action="{% url 'site_backend:directions_change_url' wt.id %}">
-
-            <div class="modal fade" id="wt-{{wt.id}}" tabindex="-1" role="dialog">
-                <div class="modal-dialog modal-xl" role="document">
-                    <div class="modal-content">
-                        {% csrf_token %}
-                        <div class="modal-header">
-                          <input class="form-control" type="text" name="type" value="{{wt.type}}">
-                        </div>
-                        <div class="modal-body">
-                          <div class="container">
-                            <div class="form-row">
-                                <div class="form-group col-lg-4">
-                                    <label for="">Универсал</label>
-                                    <input type="text" class="form-control" name="step0" value="{{ wt.comm_stage_0 }}">
-                                </div>
-                                <div class="form-group col-lg-4">
-                                    <label for="">1 этап</label>
-                                    <input type="text" class="form-control" name="step1" value="{{ wt.comm_stage_1 }}">
-                                </div>
-                                <div class="form-group col-lg-4">
-                                    <label for="">2 этап</label>
-                                    <input type="text" class="form-control" name="step2" value="{{ wt.comm_stage_2 }}">
-                                </div>
-                                <div class="form-group col-lg-4">
-                                    <label for="">3 этап</label>
-                                    <input type="text" class="form-control" name="step3" value="{{ wt.comm_stage_3 }}">
-                                </div>
-                                <div class="form-group col-lg-4">
-                                    <label for="">4 этап</label>
-                                    <input type="text" class="form-control" name="step4" value="{{ wt.comm_stage_4 }}">
-                                </div>
-                                <div class="form-group col-lg-4">
-                                    <label for="">5 этап</label>
-                                    <input type="text" class="form-control" name="step5" value="{{ wt.comm_stage_5 }}">
-                                </div>
-                                <div class="form-group col-lg-4">
-                                    <label for="">Дисконтный этап</label>
-                                    <input type="text" class="form-control" name="step6" value="{{ wt.comm_stage_6 }}">
-                                </div>
-                                <div class="custom-control custom-switch">
-                                    {% if wt.post_pay %}
-                                        <input type="checkbox" class="custom-control-input" id="post_pay" name="post_pay" checked>
-                                        <label class="custom-control-label" for="post_pay"> Пост-оплата </label>
-                                    {% else %}
-                                        <input type="checkbox" class="custom-control-input" id="post_pay"  name="post_pay" >
-                                        <label class="custom-control-label" for="post_pay"> Пост-оплата </label>
-                                    {% endif %}
-                                </div>
-
-                                <div class="custom-control custom-switch">
-                                    {% if wt.excl_type %}
-                                        <input type="checkbox" class="custom-control-input" id="excl_type"  name="excl_type" checked>
-                                        <label class="custom-control-label" for="excl_type"> Универсалы </label>
-                                    {% else %}
-                                        <input type="checkbox" class="custom-control-input" id="excl_type"  name="excl_type" >
-                                        <label class="custom-control-label" for="excl_type"> Универсалы </label>
-                                    {% endif %}
-                                </div>
-                              </div>
-                              <br>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-success">Cохранить</button>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </form>
+	<div class="modal fade" id="wt-{{wt.id}}" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-xl" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+				  <input class="form-control" type="text" placeholder="{{wt.type}}">
+				</div>
+				<div class="modal-body">
+				  <div class="container">
+					<div class="form-row">
+				        <div class="form-group col-lg-4">
+				        	<label for="">Универсал</label>
+				          	<input type="text" class="form-control" id="step0" placeholder="{{ wt.comm_stage_0 }}">
+				        </div>
+				        <div class="form-group col-lg-4">
+				        	<label for="">1 этап</label>
+				          	<input type="text" class="form-control" id="step1" placeholder={{ wt.comm_stage_1 }}">
+				        </div>
+				        <div class="form-group col-lg-4">
+				          	<label for="">2 этап</label>
+				          	<input type="text" class="form-control" id="step2" placeholder="{{ wt.comm_stage_2 }}">
+				        </div>
+				        <div class="form-group col-lg-4">
+				          	<label for="">3 этап</label>
+				          	<input type="text" class="form-control" id="step3" placeholder="{{ wt.comm_stage_3 }}">
+				        </div>
+				        <div class="form-group col-lg-4">
+				          	<label for="">4 этап</label>
+				          	<input type="text" class="form-control" id="step4" placeholder="{{ wt.comm_stage_4 }}">
+				        </div>
+				        <div class="form-group col-lg-4">
+				          	<label for="">5 этап</label>
+				          	<input type="text" class="form-control" id="step5" placeholder="{{ wt.comm_stage_5 }}">
+				        </div>
+				        <div class="form-group col-lg-4">
+				          	<label for="">Дисконтный этап</label>
+				          	<input type="text" class="form-control" id="step6" placeholder="{{ wt.comm_stage_6 }}">
+				        </div>
+						<div class="custom-control custom-switch">
+					    	<input type="checkbox" class="custom-control-input" id="post_pay">
+							<label class="custom-control-label" for="post_pay"></label>
+						</div>
+						<div class="custom-control custom-switch">
+					    	<input type="checkbox" class="custom-control-input" id="excl_wt">
+							<label class="custom-control-label" for="excl_wt"></label>
+						</div>
+				      </div>
+				  	</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-success">Cохранить</button>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+				</div>
+			</div>
+		</div>
+	</div>
 	{% endfor %}
 	<!-- Scroll to Top Button-->
 	<a class="scroll-to-top rounded" href="#page-top">

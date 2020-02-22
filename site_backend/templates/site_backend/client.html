@@ -62,11 +62,10 @@
                   </thead>
                   <tbody>
                   {% for client in clients %}
+                      <tr>
                         <form method="POST" action="{% url "site_backend:clients_url" %}">
                           {% csrf_token %}
-                          <input type="hidden" name="id" value="{{ client|get_value_from_dict:'id' }}">
 
-                            <tr>
                               <td>2019-11-21 18:59</td>
                               <td>{% if client|get_value_from_dict:'status' == 1 %} ✔ {% else %} ❌ {% endif %}</td>
                               <td>{{ client|get_value_from_dict:'id' }}</td>
@@ -80,14 +79,15 @@
 
                                  {% if client|get_value_from_dict:'status' == 1 %}
                                      <input type="hidden" name="action" value="freeze">
-                                    <input class='btn btn-danger' type="button" name="action" value="Заблокировать">
+                                    <button class='btn btn-danger'>Заблокировать</button>
                                  {% else %}
                                      <input type="hidden" name="action" value="unfreeze">
-                                    <input class='btn btn-success' type="button" name="action" value="Разблокировать">
+                                    <button class='btn btn-success'>Разблокировать</button>
                                  {% endif %}
                               </td>
-                            </tr>
+
                       </form>
+                      </tr>
                   {% endfor %}
 
                   </tbody>

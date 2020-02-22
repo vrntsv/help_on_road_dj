@@ -136,6 +136,31 @@ def get_work_types():
     return directions
 
 
+def change_wt(wt_id, wt_data):
+    print(wt_data)
+    wt = models.WorkType.objects.get(id=wt_id)
+    wt.type = wt_data['type']
+    wt.comm_stage_0 = wt_data['step0']
+    wt.comm_stage_1 = wt_data['step1']
+    wt.comm_stage_2 = wt_data['step2']
+    wt.comm_stage_3 = wt_data['step3']
+    wt.comm_stage_4 = wt_data['step4']
+    wt.comm_stage_5 = wt_data['step5']
+    wt.comm_stage_6 = wt_data['step6']
+
+    if wt_data['post_pay'] == 'on':
+        wt.post_pay = 1
+    else:
+        wt.post_pay = None
+
+    if wt_data['excl_type'] == 'on':
+        wt.excl_type = 1
+    else:
+        wt.excl_type = None
+
+    wt.save()
+
+
 def get_employees_very_first():
     """
     Ошибка с потерей данных в словаре у very_first_data
@@ -530,6 +555,9 @@ def get_master_card_info(master_id):
 
 def get_history():
     return models.UsersHistory.objects.all().values()
+
+
+
 
 
 def get_clients():

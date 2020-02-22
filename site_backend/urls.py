@@ -21,6 +21,7 @@ import debug_toolbar
 urlpatterns = [
     path('', views.index_router, name='index_url'),
     path('directions/', views.directions_router, name='directions_url'),
+    path('directions?change=<int:wt_id>', views.directions_change_router, name='directions_change_url'),
     path('active_masters/', views.active_masters_router, name='am_url'),
     path('active_masters?wt=<int:wt_id>;city=<int:city_id>/', views.active_master_wt_city, name='am_url_wt_city'),
     path('active_masters?wt=<int:wt_id>;active=1/', views.active_master_online_wt, name='am_url_wt_online'),

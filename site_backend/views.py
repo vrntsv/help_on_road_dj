@@ -82,6 +82,16 @@ def directions_router(request):
     return HttpResponse(status=405)
 
 
+def directions_change_router(request, wt_id):
+    if request.method == 'POST':
+        services.change_wt(wt_id, request.POST)
+        return render(request, 'site_backend/directions.html',
+                      {
+                          'work_types': services.get_work_types(),
+                      })
+    return HttpResponse(status=405)
+
+
 def active_masters_router(request):
     if request.method == 'GET':
         return render(request, 'site_backend/active_masters.html', {
@@ -223,3 +233,5 @@ def clients_router(request):
                             'clients': services.get_clients()
                         })
     return HttpResponse(status=405)
+
+

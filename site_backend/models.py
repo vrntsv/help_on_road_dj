@@ -318,6 +318,7 @@ class WorkType(models.Model):
     comm_stage_5 = models.SmallIntegerField()
     comm_stage_6 = models.SmallIntegerField()
     post_pay = models.SmallIntegerField(blank=True, null=True)
+    excl_type = models.SmallIntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
