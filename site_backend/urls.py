@@ -33,5 +33,9 @@ urlpatterns = [
     path('operators?delete=<int:operator_id>', views.operators_delete_router, name='operators_delete_url'),
     path('history', views.history_router, name='history_url'),
     path('сlients', views.clients_router, name='clients_url'),
+    path('tech', views.tech_router, name='tech_url'),
+    path('tech/alter_key', views.tech_alter_key_router, name='tech_alter_key_url'),
+    path('tech/add_city', views.tech_add_city_router, name='tech_add_city_url'),
+    path('tech/delete_city', views.tech_delete_city_router, name='tech_delete_city_url'),
 
 ]

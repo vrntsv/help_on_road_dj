@@ -38,7 +38,6 @@ def get_sum_transfer_by_date(start_date=date.today() - timedelta(days=31), end_d
         return None
 
 
-
 def get_spent_transfer_by_date(start_date=date.today() - timedelta(days=31), end_date=date.today()):
     """
     Пулучение сумму переврдов за период времени
@@ -52,6 +51,30 @@ def get_spent_transfer_by_date(start_date=date.today() - timedelta(days=31), end
         return obj['commission__sum']
     except:
         return None
+
+
+def alter_amo_key(key):
+    obj = models.Config.objects.get(id_field=1)
+    obj.amo_key = key
+    obj.save()
+
+
+def add_city(city_name):
+    city = models.City(city=city_name)
+    city.save()
+
+
+def delete_city(city_id):
+    city = models.City.objects.get(id=city_id)
+    city.delete()
+
+
+def get_cities():
+    return models.City.objects.all().values()
+
+
+def get_amo_key():
+    return models.Config.objects.filter(id_field=1).values()
 
 
 def get_sum_proped_by_date(start_date=date.today() - timedelta(days=31), end_date=date.today()):

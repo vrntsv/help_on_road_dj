@@ -54,6 +54,52 @@ def index_router(request):
     return HttpResponse(status=405)
 
 
+def tech_router(request):
+    if request.method == 'GET':
+        print(services.get_amo_key())
+        return render(request, 'site_backend/tech.html',
+                      {
+                          'amo_key': services.get_amo_key(),
+                          'cities': services.get_cities(),
+                      })
+    return HttpResponse(status=405)
+
+
+def tech_alter_key_router(request):
+    if request.method == 'POST':
+        services.alter_amo_key(request.POST.get('new_key'))
+        return render(request, 'site_backend/tech.html',
+                      {
+                          'amo_key': services.get_amo_key(),
+                          'cities': services.get_cities(),
+
+                      })
+    return HttpResponse(status=405)
+
+
+def tech_add_city_router(request):
+    if request.method == 'POST':
+        print(request.POST)
+        services.add_city(request.POST.get('new_city'))
+        return render(request, 'site_backend/tech.html',
+                      {
+                          'amo_key': services.get_amo_key(),
+                          'cities': services.get_cities(),
+                      })
+    return HttpResponse(status=405)
+
+
+def tech_delete_city_router(request):
+    if request.method == 'POST':
+        services.delete_city(request.POST.get('city_id'))
+        return render(request, 'site_backend/tech.html',
+                      {
+                          'amo_key': services.get_amo_key(),
+                          'cities': services.get_cities(),
+                      })
+    return HttpResponse(status=405)
+
+
 def directions_router(request):
     if request.method == 'GET':
         return render(request, 'site_backend/directions.html',

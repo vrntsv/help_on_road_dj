@@ -1,0 +1,267 @@
+{% load static %}
+{% load djutils %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>SB Admin 2 - Cards</title>
+
+  <!-- Custom fonts for this template-->
+  <link href="/static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+  <!-- Custom styles for this template-->
+  <link href="/static/css/sb-admin-2.min.css" rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+
+  <!-- Page Wrapper -->
+  <div id="wrapper">
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+      <!-- Main Content -->
+      <div id="content">
+        <div class="container-fluid">
+<!-- Рассылка -->
+          <div class="row">
+            <div class="col">
+              <div class="row">
+                <div class="col-lg">
+                  <div class="card shadow mb-4">
+                    <!-- Card Header - Dropdown -->
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                      <h6 class="m-0 font-weight-bold text-primary">Обычным пользователям</h6>
+                      <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink" style='width: 300px;'>
+                          <div class="container">
+                            {% for city in cities %}
+                                <input name="city" class="form-check-input border-0 small" type="checkbox" value="{{ city|get_value_from_dict:'city' }}">
+                                <label style="" class="form-check-label">
+                                    Москва + МО
+                                </label><br>
+                                <input name="id" class="form-check-input border-0 small" type="hidden" value="">
+
+                                <input name="temp" class="form-check-input border-0 small" type="checkbox" value="1">
+                                <label style="" class="form-check-label">
+                                    Санкт-Петербург + ЛО
+                                </label>
+                            {% endfor %}
+
+                            <div class="dropdown-divider"></div>
+                            <input name="temp" class="form-check-input border-0 small" type="checkbox" value="1">
+                            <label style="" class="form-check-label">
+                              Удалить через 48 часов
+                            </label>
+                          </div>
+                            
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Card Body -->
+                    <div class="card-body">
+                      <textarea name="" id="" cols="30" rows="10"></textarea><br>
+                      <input class='btn' placeholder="Ссылка на изображение" type="text">
+                    </div>
+                    <input class="btn btn-primary" type="submit" value="ОТПРАВИТЬ">
+                  </div>
+                </div>
+                <div class="col-lg">
+                  <!-- Dropdown Card Example -->
+                  <div class="card shadow mb-4">
+                    <!-- Card Header - Dropdown -->
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                      <h6 class="m-0 font-weight-bold text-primary">👑 Универсалам 👑</h6>
+                      <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink" style='width: 300px;'>
+                          <div class="container">
+                            <input name="temp" class="form-check-input border-0 small" type="checkbox" value="1">
+                            <label style="" class="form-check-label">
+                                Москва + МО
+                            </label><br>
+                            <input name="temp" class="form-check-input border-0 small" type="checkbox" value="1">
+                            <label style="" class="form-check-label">
+                                Санкт-Петербург + ЛО
+                            </label>
+
+                            <div class="dropdown-divider"></div>
+                            <input name="temp" class="form-check-input border-0 small" type="checkbox" value="1">
+                            <label style="" class="form-check-label">
+                              Удалить через 48 часов
+                            </label>
+                          </div>
+                            
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Card Body -->
+                    <div class="card-body">
+                      <textarea name="" id="" cols="30" rows="10"></textarea><br>
+                      <input class='btn' placeholder="Ссылка на изображение" type="text">
+                    </div>
+                    <input class="btn btn-primary" type="submit" value="ОТПРАВИТЬ">
+                  </div>
+                </div>
+                <div class="col-lg">
+                  <div class="card shadow mb-4">
+                    <!-- Card Header - Dropdown -->
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                      <h6 class="m-0 font-weight-bold text-primary">Клиентам</h6>
+                    </div>
+                    <!-- Card Body -->
+                    <div class="card-body">
+                      <textarea name="" id="" cols="30" rows="10"></textarea><br>
+                      <input class='btn' placeholder="Ссылка на изображение" type="text">
+                    </div>
+                    <input class="btn btn-primary" type="submit" value="ОТПРАВИТЬ">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+            <div class="row">
+            <div class="col">
+              <div class="card shadow mb-4">
+                <!-- Card Header - Accordion -->
+                <a href="#collapseCardExample" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardExample">
+                  <h6 class="m-0 font-weight-bold text-primary">amoCRM</h6>
+                </a>
+                <!-- Card Content - Collapse -->
+                <div class="collapse show" id="collapseCardExample">
+                  <div class="card-body">
+                    API ключ: <strong>{{amo_key.0|get_value_from_dict:'amo_key'}}</strong><br>
+                    <b>Изменить API ключ</b>
+                      <form action="{% url "site_backend:tech_alter_key_url" %}" method="post">
+                          {% csrf_token %}
+                            <input class="btn" style='width:100%; margin-bottom: 10px;' placeholder="Введите новый" type="text" name="new_key">
+                            <button class="btn btn-primary" style='width:100%'>ИЗМЕНИТЬ</button>
+                      </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow mb-4">
+                <!-- Card Header - Accordion -->
+                <a href="#collapseCardCity" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardExample">
+                  <h6 class="m-0 font-weight-bold text-primary">Города</h6>
+                </a>
+                <!-- Card Content - Collapse -->
+                <div class="collapse show" id="collapseCardCity">
+                  <div class="card-body">
+                      <form action="{% url "site_backend:tech_add_city_url" %}" method="post">
+                          {% csrf_token %}
+                          <input class="btn" style='width:100%; margin-bottom: 10px;' placeholder="Введите новый город" type="text" name="new_city">
+                          <button class="btn btn-primary" style='width:100%; margin-bottom: 10px;'>Добавить город</button>
+                        </form>
+                    <table class="table table-sm-4 table-md-8 table-lg-12 table-bordered" id="dataTable" width="100%" cellspacing="0">
+                      <thead>
+                        <tr class="text-gray-900">
+                          <th><b>Город</b></th>
+                          <th><b>Действие</b></th>
+                        </tr>
+                      </thead>
+                      <tfoot>
+                        <tr class="text-gray-900">
+                          <th><b>Город</b></th>
+                          <th><b>Действие</b></th>
+                        </tr>
+                      </tfoot>
+                      <tbody>
+                      {% for city in cities %}
+                        <tr>
+                          <th>{{city|get_value_from_dict:'city'}}</th>
+                          <th>
+                              <form action="{% url 'site_backend:tech_delete_city_url' %}" method="post">
+                                  {% csrf_token %}
+                                  <input type="hidden" name="city_id" value="{{ city|get_value_from_dict:'id' }}">
+                                    <button  type="submit" class="col my-auto btn btn-danger">Удалить</button>
+                                  </form>
+                          </th>
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+                    </table>
+                  
+                  </div>
+                </div>
+              </div>
+            </div>
+            </div>
+
+                
+          
+
+        </div>
+
+      </div>
+      <!-- End of Main Content -->
+
+      <!-- Footer -->
+      <footer class="sticky-footer bg-white">
+        <div class="container my-auto">
+          <div class="copyright text-center my-auto">
+            <span>Copyright &copy; Your Website 2019</span>
+          </div>
+        </div>
+      </footer>
+      <!-- End of Footer -->
+
+    </div>
+    <!-- End of Content Wrapper -->
+
+  </div>
+  <!-- End of Page Wrapper -->
+
+  <!-- Scroll to Top Button-->
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
+
+  <!-- Logout Modal-->
+  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+          <a class="btn btn-primary" href="login.html">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="/static/vendor/jquery/jquery.min.js"></script>
+  <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="/static/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="/static/js/sb-admin-2.min.js"></script>
+
+</body>
+
+</html>

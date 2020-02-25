@@ -36,10 +36,10 @@ class AnswerMessage(models.Model):
 
 
 class City(models.Model):
-    id = models.SmallIntegerField(primary_key=True)
-    id_field = models.ForeignKey('FieldOfActivity', models.DO_NOTHING, db_column='id_field')
+    id = models.AutoField(primary_key=True)
+    id_field = models.ForeignKey('FieldOfActivity', models.DO_NOTHING, db_column='id_field', default=1)
     city = models.CharField(max_length=100)
-    active = models.IntegerField()
+    active = models.IntegerField(default=1)
 
     class Meta:
         managed = False
@@ -81,7 +81,7 @@ class CommisionTimer(models.Model):
 
 
 class Config(models.Model):
-    id_field = models.IntegerField(unique=True)
+    id_field = models.IntegerField(unique=True, primary_key=True)
     amo_key = models.CharField(max_length=255)
     commission = models.IntegerField()
 
