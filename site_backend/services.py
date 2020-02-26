@@ -73,6 +73,10 @@ def get_cities():
     return models.City.objects.all().values()
 
 
+def get_users_deals(id_user):
+    return models.Deals.objects.filter(id_user_id=id_user).values()
+
+
 def get_amo_key():
     return models.Config.objects.filter(id_field=1).values()
 
@@ -521,7 +525,7 @@ def add_emp(emp_id, wt_data):
 def create_operator(name, token):
     try:
         operator_auth = User.objects.create_user(username=name, password=token)
-        operator_data = models.Operators(name=name, token=token)
+        operator_data = models.Operators(id=operator_auth.id, name=name, token=token)
         operator_auth.save()
         operator_data.save()
         return True

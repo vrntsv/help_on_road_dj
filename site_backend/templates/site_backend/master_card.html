@@ -299,7 +299,18 @@
                   <td> {% if deal|get_value_from_dict:'id_proped' %}<a href="{% url "site_backedn:master_card_url" deal|get_value_from_dict:'id_proped' %}">{{deal|get_value_from_dict:'id_proped'}}</a> {% else %} - {% endif %}</td>
                   <td class=" text-center" >
                     <div class="btn-group">
-                      <button class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Оплачено</button>
+                      {% if deal|get_value_from_dict:'status' == 4%}
+                            <button class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Оплачено</button>
+                      {% elif deal|get_value_from_dict:'status' == 2 %}
+                            <button class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Отложена</button>
+                        {% elif deal|get_value_from_dict:'status' == 3 %}
+                            <button class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ожидает оплаты</button>
+                        {% elif deal|get_value_from_dict:'status' == -1 %}
+                            <button class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Сорвано</button>
+                        {% else %}
+                          <td class='text-warning text-center font-weight-bold'>В работе
+                        {% endif %}
+
                       <div class="dropdown-menu">
                         <button class="btn bg-info text-white dropdown-item" >Списать</button>
                         <button class="btn bg-warning text-white dropdown-item" >Вернуть</button>
