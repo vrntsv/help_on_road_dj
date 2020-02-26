@@ -37,5 +37,8 @@ urlpatterns = [
     path('tech/alter_key', views.tech_alter_key_router, name='tech_alter_key_url'),
     path('tech/add_city', views.tech_add_city_router, name='tech_add_city_url'),
     path('tech/delete_city', views.tech_delete_city_router, name='tech_delete_city_url'),
+    path('tech/send_message_emp', views.tech_send_message_emp_router, name='tech_send_message_emp_url'),
+    path('tech/send_message_excl', views.tech_send_message_excl_router, name='tech_send_message_excl_url'),
+    path('tech/send_message_client', views.tech_send_message_clients_router, name='tech_send_message_client_url'),
 
 ]

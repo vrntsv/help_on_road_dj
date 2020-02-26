@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from . import services
+from . import bot
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 
@@ -98,6 +99,72 @@ def tech_delete_city_router(request):
                           'cities': services.get_cities(),
                       })
     return HttpResponse(status=405)
+
+
+def tech_send_message_emp_router(request):
+    if request.method == 'POST':
+        bot.send_message_tech(
+            text=request.POST.get('text'),
+            city_list=request.POST.getlist('city_id'),
+            image=request.POST.get('picture'),
+            to_all=True
+        )
+        return render(request, 'site_backend/tech.html',
+                      {
+                          'amo_key': services.get_amo_key(),
+                          'cities': services.get_cities(),
+                      })
+    return HttpResponse(status=405)
+
+
+def tech_send_message_excl_router(request):
+    if request.method == 'POST':
+        bot.send_message_tech(
+            text=request.POST.get('text'),
+            city_list=request.POST.getlist('city_id'),
+            image=request.POST.get('picture'),
+            to_excl=True
+        )
+        return render(request, 'site_backend/tech.html',
+                      {
+                          'amo_key': services.get_amo_key(),
+                          'cities': services.get_cities(),
+                      })
+    return HttpResponse(status=405)
+
+
+def tech_send_message_excl_router(request):
+    if request.method == 'POST':
+        bot.send_message_tech(
+            text=request.POST.get('text'),
+            city_list=request.POST.getlist('city_id'),
+            image=request.POST.get('picture'),
+            to_excl=True
+        )
+        return render(request, 'site_backend/tech.html',
+                      {
+                          'amo_key': services.get_amo_key(),
+                          'cities': services.get_cities(),
+                      })
+    return HttpResponse(status=405)
+
+
+
+def tech_send_message_clients_router(request):
+    if request.method == 'POST':
+        bot.send_message_tech(
+            text=request.POST.get('text'),
+            city_list=request.POST.getlist('city_id'),
+            image=request.POST.get('picture'),
+            to_clients=True
+        )
+        return render(request, 'site_backend/tech.html',
+                      {
+                          'amo_key': services.get_amo_key(),
+                          'cities': services.get_cities(),
+                      })
+    return HttpResponse(status=405)
+
 
 
 def directions_router(request):

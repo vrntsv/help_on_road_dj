@@ -33,103 +33,117 @@
       <div id="content">
         <div class="container-fluid">
 <!-- Рассылка -->
+
           <div class="row">
             <div class="col">
               <div class="row">
-                <div class="col-lg">
-                  <div class="card shadow mb-4">
-                    <!-- Card Header - Dropdown -->
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                      <h6 class="m-0 font-weight-bold text-primary">Обычным пользователям</h6>
-                      <div class="dropdown no-arrow">
-                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink" style='width: 300px;'>
-                          <div class="container">
-                            {% for city in cities %}
-                                <input name="city" class="form-check-input border-0 small" type="checkbox" value="{{ city|get_value_from_dict:'city' }}">
-                                <label style="" class="form-check-label">
-                                    Москва + МО
-                                </label><br>
-                                <input name="id" class="form-check-input border-0 small" type="hidden" value="">
+                  <form action="{% url "site_backend:tech_send_message_emp_url" %}" method="post">
+                    {% csrf_token %}
+                         <div class="col-lg">
 
-                                <input name="temp" class="form-check-input border-0 small" type="checkbox" value="1">
-                                <label style="" class="form-check-label">
-                                    Санкт-Петербург + ЛО
-                                </label>
-                            {% endfor %}
+                          <div class="card shadow mb-4">
+                            <!-- Card Header - Dropdown -->
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                              <h6 class="m-0 font-weight-bold text-primary">Обычным пользователям</h6>
+                              <div class="dropdown no-arrow">
+                                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                  <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink" style='width: 300px;'>
+                                  <div class="container">
+                                    {% for city in cities %}
+                                        <input name="city" class="form-check-input border-0 small" type="checkbox" value="{{ city|get_value_from_dict:'city' }}">
+                                        <label style="" class="form-check-label">
+                                           {{ city|get_value_from_dict:'city' }}
+                                        </label><br>
+                                        <input name="city_id" class="form-check-input border-0 small" type="hidden" value="{{ city|get_value_from_dict:'id' }}">
 
-                            <div class="dropdown-divider"></div>
-                            <input name="temp" class="form-check-input border-0 small" type="checkbox" value="1">
-                            <label style="" class="form-check-label">
-                              Удалить через 48 часов
-                            </label>
+                                    {% endfor %}
+
+                                    <div class="dropdown-divider"></div>
+                                    <input name="temp" class="form-check-input border-0 small" type="checkbox" value="1">
+                                    <label style="" class="form-check-label">
+                                      Удалить через 48 часов
+                                    </label>
+                                  </div>
+
+                                </div>
+                              </div>
+                            </div>
+                            <!-- Card Body -->
+                            <div class="card-body">
+                              <textarea name="text" id="" cols="30" rows="10"></textarea><br>
+                              <input class='text' name="picture" placeholder="Ссылка на изображение" type="text">
+                            </div>
+                            <input class="btn btn-primary" type="submit" value="ОТПРАВИТЬ">
                           </div>
-                            
                         </div>
-                      </div>
-                    </div>
-                    <!-- Card Body -->
-                    <div class="card-body">
-                      <textarea name="" id="" cols="30" rows="10"></textarea><br>
-                      <input class='btn' placeholder="Ссылка на изображение" type="text">
-                    </div>
-                    <input class="btn btn-primary" type="submit" value="ОТПРАВИТЬ">
-                  </div>
-                </div>
+                  </form>
+
                 <div class="col-lg">
                   <!-- Dropdown Card Example -->
+
                   <div class="card shadow mb-4">
                     <!-- Card Header - Dropdown -->
+
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                       <h6 class="m-0 font-weight-bold text-primary">👑 Универсалам 👑</h6>
                       <div class="dropdown no-arrow">
-                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink" style='width: 300px;'>
-                          <div class="container">
-                            <input name="temp" class="form-check-input border-0 small" type="checkbox" value="1">
-                            <label style="" class="form-check-label">
-                                Москва + МО
-                            </label><br>
-                            <input name="temp" class="form-check-input border-0 small" type="checkbox" value="1">
-                            <label style="" class="form-check-label">
-                                Санкт-Петербург + ЛО
-                            </label>
+                          <form action="{% url "site_backend:tech_send_message_excl_url" %}" method="post">
+                            {% csrf_token %}
+                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                            </a>
+                                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink" style='width: 300px;'>
+                                  <div class="container">
+                                    {% for city in cities %}
+                                        <input name="city" class="form-check-input border-0 small" type="checkbox" value="{{ city|get_value_from_dict:'city' }}">
+                                        <label style="" class="form-check-label">
+                                           {{ city|get_value_from_dict:'city' }}
+                                        </label><br>
+                                        <input name="city_id" class="form-check-input border-0 small" type="hidden" value="{{ city|get_value_from_dict:'id' }}">
 
-                            <div class="dropdown-divider"></div>
-                            <input name="temp" class="form-check-input border-0 small" type="checkbox" value="1">
-                            <label style="" class="form-check-label">
-                              Удалить через 48 часов
-                            </label>
-                          </div>
-                            
-                        </div>
+                                    {% endfor %}
+
+                                    <div class="dropdown-divider"></div>
+                                    <input name="temp" class="form-check-input border-0 small" type="checkbox" value="1">
+                                    <label style="" class="form-check-label">
+                                      Удалить через 48 часов
+                                    </label>
+                                  </div>
+                                </div>
+
                       </div>
                     </div>
                     <!-- Card Body -->
                     <div class="card-body">
-                      <textarea name="" id="" cols="30" rows="10"></textarea><br>
-                      <input class='btn' placeholder="Ссылка на изображение" type="text">
+                      <textarea name="text" id="" cols="30" rows="10"></textarea><br>
+                      <input class='text' name="picture" placeholder="Ссылка на изображение" type="text">
                     </div>
                     <input class="btn btn-primary" type="submit" value="ОТПРАВИТЬ">
+                   </form>
                   </div>
                 </div>
                 <div class="col-lg">
                   <div class="card shadow mb-4">
                     <!-- Card Header - Dropdown -->
+
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                       <h6 class="m-0 font-weight-bold text-primary">Клиентам</h6>
                     </div>
                     <!-- Card Body -->
-                    <div class="card-body">
-                      <textarea name="" id="" cols="30" rows="10"></textarea><br>
-                      <input class='btn' placeholder="Ссылка на изображение" type="text">
-                    </div>
-                    <input class="btn btn-primary" type="submit" value="ОТПРАВИТЬ">
+
+                        <div class="card-body">
+                            <form action="{% url 'site_backend:tech_send_message_client_url' %}" method="post">
+                            {% csrf_token %}
+
+                              <textarea name="text" id="" cols="30" rows="10"></textarea><br>
+                              <input class='text' name="picture" placeholder="Ссылка на изображение" type="text">
+                            </div>
+                            <input class="btn btn-primary" type="submit" value="ОТПРАВИТЬ">
+                            </form>
                   </div>
+
                 </div>
               </div>
             </div>
