@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate,login
 from django.http import HttpResponse
 from django.urls import reverse
 
@@ -20,6 +20,7 @@ def login_router(request):
         user = authenticate(username=request.POST.get('username'), password=request.POST.get('password'))
         print(user)
         if user is not None:
+            login(request, user)
             return redirect('/')
         else:
             return render(request, 'site_backend/login.html', {
@@ -325,6 +326,38 @@ def master_card_router(request, master_id):
         if request.method == 'GET':
             #print(json.dumps(services.get_master_card_info(master_id), sort_keys=True, indent=1, cls=DjangoJSONEncoder))
             print(services.get_users_deals(master_id))
+            return render(request, 'site_backend/master_card.html',
+                          {
+                              'info': services.get_master_card_info(master_id),
+                          })
+        return HttpResponse(status=405)
+
+
+def master_card_write_off_router(request, master_id):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            bot.change_money_and_notify(
+                user_id=master_id,
+                ammount=request.POST.get('money'),
+                comment=request.POST.get('comment'),
+                write_off=True
+            )
+            return render(request, 'site_backend/master_card.html',
+                          {
+                              'info': services.get_master_card_info(master_id),
+                          })
+        return HttpResponse(status=405)
+
+
+def master_card_charge_router(request, master_id):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            bot.change_money_and_notify(
+                user_id=master_id,
+                ammount=request.POST.get('money'),
+                comment=request.POST.get('comment'),
+                charge=True
+            )
             return render(request, 'site_backend/master_card.html',
                           {
                               'info': services.get_master_card_info(master_id),

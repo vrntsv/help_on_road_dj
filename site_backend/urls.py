@@ -29,6 +29,8 @@ urlpatterns = [
     path('active_masters?wt=<int:wt_id>;exclusive=1/', views.active_master_exclusive_wt, name='am_url_wt_exсlusive'),
     path('active_masters?vf=1', views.active_master_vf, name='am_url_vf'),
     path('master_card?id=<int:master_id>', views.master_card_router, name='master_card_url'),
+    path('master_card?id=<int:master_id>?write_off', views.master_card_write_off_router, name='master_card_write_off_url'),
+    path('master_card?id=<int:master_id>?charge', views.master_card_charge_router, name='master_card_charge_url'),
     path('registration', views.registration_router, name='registration_url'),
     path('operators', views.operators_router, name='operators_url'),
     path('operators?delete=<int:operator_id>', views.operators_delete_router, name='operators_delete_url'),

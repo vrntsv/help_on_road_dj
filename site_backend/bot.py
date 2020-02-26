@@ -32,3 +32,33 @@ def send_message_tech(text, city_list, image=None, to_all=False, to_excl=False, 
         except:
             print('err sending to {}'.format(id['id']))
 
+
+def change_money_and_notify(user_id, ammount, comment=False, write_off=False, charge=False):
+    user = models.Employees.objects.get(id=user_id)
+    if write_off:
+        if user.exclusive:
+            user.balance += ammount
+        else:
+            user.balance -= ammount
+        user.save()
+        try:
+            bot.send_message(user_id, 'С вашего баланса списано {}р.'.format(ammount))
+            if comment and comment != '':
+                bot.send_message(user_id, 'Комментарий:\n {}'.format(comment))
+        except:
+            print('err sending')
+    elif charge:
+        if user.exclusive:
+            user.balance -= ammount
+        else:
+            user.balance += ammount
+        user.save()
+        try:
+            bot.send_message(user_id, 'На ваш баланс зачисленно {}р.'.format(ammount))
+            bot.send_message(user_id, 'Комментарий:\n {}'.format(comment))
+            if comment and comment != '':
+                bot.send_message(user_id, 'Комментарий:\n {}'.format(comment))
+        except:
+            print('err sending')
+
+

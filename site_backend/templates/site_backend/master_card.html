@@ -312,8 +312,8 @@
                         {% endif %}
 
                       <div class="dropdown-menu">
-                        <button class="btn bg-info text-white dropdown-item" >Списать</button>
-                        <button class="btn bg-warning text-white dropdown-item" >Вернуть</button>
+                        <button class="btn bg-info text-white dropdown-item" data-toggle="modal" data-target="#deal_id_write_off-{{deal|get_value_from_dict:'id'}}">Списать</button>
+                        <button class="btn bg-warning text-white dropdown-item" data-toggle="modal" data-target="#deal_id_charge-{{deal|get_value_from_dict:'id'}}" >Вернуть</button>
                       </div>
                     </div>
                   </td>
@@ -322,43 +322,7 @@
                 <tr>
                                   {% endfor %}
               {% endwith %}
-                  <!-- https://tehpomosh.amocrm.ru/leads/detail/23363851 пример ссылки по id сделки-->
-                  <td>22.14.2019</td>
-                  <td> <a href="#">999999</a> </td>
-                  <td class=" text-center" data-toggle="tooltip" data-placement="right" title="💳 - БЕЗналичные/💵- наличные">💳</td>
-                  <td>40%</td>
-                  <td >2000 ₽</td>
-                  <td class="text-success">10000 ₽</td>
-                  <td class="text-danger">100 ₽</td>
-                  <td></td>
-                  <td class=" text-center">
-                    <div class="btn-group">
-                      <button class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Сорвано</button>
-                      <div class="dropdown-menu">
-                        <button class="btn bg-info text-white dropdown-item" >Списать</button>
-                        <button class="btn bg-warning text-white dropdown-item" >Вернуть</button>
-                      </div>
-                    </div>
-                  </td>
 
-                  <td><a href="#"></a></td>
-                </tr>
-                <tr>
-                  <!-- https://tehpomosh.amocrm.ru/leads/detail/23363851 пример ссылки по id сделки-->
-                  <td>22.14.2019</td>
-                  <td> <a href="#">999999</a> </td>
-                  <td class=" text-center" data-toggle="tooltip" data-placement="right" title="💳 - БЕЗналичные/💵- наличные">💵</td>
-                  <td>40%</td>
-                  <td >2000 ₽</td>
-                  <td class="text-success">10000 ₽</td>
-                  <td class="text-danger">100 ₽</td>
-                  <td><a href="#">999999</a></td>
-                  <td class='text-warning text-center font-weight-bold'>В работе
-     
-                  </td>
-
-                  <td><a href="#"></a></td>
-                </tr>
               </tbody>
             </table>
           </div>
@@ -366,7 +330,43 @@
       </div>
   </div>
   <!-- End of Page Wrapper -->
+      {% with info|get_value_from_dict:'deals' as deals %}
+              {% for deal in deals %}
+              <form action="{% url "site_backend:master_card_write_off_url" deal|get_value_from_dict:'id'%}" method="post">
+                  <div class="modal fade" id="deal_id_write_off-{{deal|get_value_from_dict:'id'}}" tabindex="-1" role="dialog">
+                            <div class="modal-dialog modal-xl" role="document">
+                                <div class="modal-content">
+                                    {% csrf_token %}
+                                    <h2 class="m-0 font-weight-bold text-primary" style="alignment: center; align-content: center">Списать деньги по сделке {{deal|get_value_from_dict:'id'}}</h2>
+                                    <input type="number" class="form-control" name="money" placeholder="Введите сумму" required><br>
+                                    <textarea name="comment" id="" cols="20" rows="5" placeholder="Введите комментарий"></textarea>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-success">Подтвердить</button>
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                                    </div>
 
+                                </div>
+                            </div>
+                        </div>
+                </form>
+                  <form action="{% url "site_backend:master_card_charge_url" deal|get_value_from_dict:'id'%}" method="post">
+                      <div class="modal fade" id="deal_id_charge-{{deal|get_value_from_dict:'id'}}" tabindex="-1" role="dialog">
+                                <div class="modal-dialog modal-xl" role="document">
+                                    <div class="modal-content">
+                                        {% csrf_token %}
+                                        <h2 class="m-0 font-weight-bold text-primary" style="alignment: center; align-content: center">Вернуть деньги по сделке {{deal|get_value_from_dict:'id'}}</h2>
+                                        <input type="number" class="form-control" name="money" placeholder="Введите сумму" required><br>
+                                        <textarea name="comment" id="" cols="20" rows="5" placeholder="Введите комментарий"></textarea>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-success">Подтвердить</button>
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                </form>
+          {% endfor %}
+    {% endwith %}
   <!-- Bootstrap core JavaScript-->
   <script src="/static/vendor/jquery/jquery.min.js"></script>
   <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
