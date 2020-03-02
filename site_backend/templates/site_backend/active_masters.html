@@ -1,30 +1,7 @@
+{% extends 'site_backend/base.html' %}
 {% load static %}
 {% load djutils %}
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
-
-  <title>SB Admin 2 - Tables</title>
-
-  <!-- Custom fonts for this template -->
-  <link href="/static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-
-  <!-- Custom styles for this template -->
-  <link href="/static/css/sb-admin-2.min.css" rel="stylesheet">
-
-  <!-- Custom styles for this page -->
-  <link href="/static/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
-
-</head>
-
+{% block content %}
 <body id="page-top">
 
   <!-- Page Wrapper -->
@@ -73,21 +50,25 @@
                           <td>{{emp|get_value_from_dict:'reg_date'}}</td>
                           <td>{{emp|get_value_from_dict:'balance'}} ₽<br>{{emp|get_value_from_dict:'bonuses'}} ₽</td>
                           <th>{{emp|get_value_from_dict:'referal_income'}}₽</th>
-                          <th data-toggle="tooltip" data-placement="top" title="Выполнено/Сорвано/Предложенно">{{emp|get_value_from_dict:'closed_deals_count'}}/{{emp|get_value_from_dict:'proped_deals_count'}}/{{emp|get_value_from_dict:'droped_deals_count'}}</th>
+                          <!-- выводи сюда коэфициент (80%) формула : k = m/N
+                          N - общее число сделок пользователя
+                          m - выполнено
+                          k - коэффициент  -->
+                          <th data-toggle="tooltip" data-placement="top" title="{{emp|get_value_from_dict:'closed_deals_count'}}/{{emp|get_value_from_dict:'droped_deals_count'}}/{{emp|get_value_from_dict:'proped_deals_count'}}">
+											80%
+                          <!--  -->
+                      	  </th>
                           <th>
                             <div class="btn-group">
-                              <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Действия</button>
-                              <div class="dropdown-menu">
-                                <a class="dropdown-item list-group-item-secondary" href="#">Редактировать</a>
+                              <button  type="submit" data-toggle="modal" data-target="#editMenu_{{ emp|get_value_from_dict:'id' }}" class="col my-auto btn bg-gray-200">Редактировать</button>
+                              <!-- <div class="dropdown-menu">
+                                <a class="dropdown-item list-group-item-secondary" href="#"data-toggle="modal" data-target="#editMenu">Редактировать</a>
                                 <a class="dropdown-item list-group-item-primary" href="#">Заморозить</a>
                                 <a class="dropdown-item list-group-item-danger" href="#">Заблокировать</a>
                                 <div class="dropdown-divider"></div>
-                                <!-- ВЫБЕРИ ОДНУ ИЗ КНОПОК -->
-                                <a class="dropdown-item list-group-item-warning" href="#">Карточка исполнителя</a>
-                                <a class="dropdown-item list-group-item-warning" href="#">Карточка Эксклюзива</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item list-group-item-info" href="#">Бонус 1 заказ</a>
-                              </div>
+                              </div> -->
                             </div>
                           </th>
                         </tr>
@@ -112,42 +93,73 @@
     <i class="fas fa-angle-up"></i>
   </a>
 
-  <!-- Logout Modal-->
-  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span>
-          </button>
-        </div>
-        <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-          <a class="btn btn-primary" href="login.html">Logout</a>
-        </div>
-      </div>
-    </div>
-  </div>
+    {% for emp in active_masters %}
+            <div class="modal fade" id="editMenu_{{ emp|get_value_from_dict:'id' }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Редактирование карточки исполнителя</h5>
+                      <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                      </button>
+                    </div>
+                   <form action="{% url 'site_backend:edit_users_data' emp|get_value_from_dict:'id' %}" method="post">
+                      {% csrf_token %}
+                    <div class="modal-body">
+                      <!-- Не забудь про корону ее выводить до поля с инпутом -->
+                      {% if emp|get_value_from_dict:'exlusive' %}
+                        👑
+                      {% endif %}
+                      <input class="form-control" type="text" name="full_name" value="{{ emp|get_value_from_dict:'full_name' }}" placeholder="Имя"><br>
+                      <input class="form-control" type="text" name="phone" placeholder="Номер телефона" value="{{ emp|get_value_from_dict:'phone' }}"><br>
+                      <p>Список направлений:</p>
+                          <div class="container" >
+                              {% for wt in work_types %}
+                               {% if wt|get_value_from_dict:'id' in emp|get_value_from_dict:'emp_wt' %}
+                                  <input class="form-check-input" type="checkbox" value="{{ wt|get_value_from_dict:'id' }}" name="emp_wt" id="defaultCheck1" checked>
+                                  <label class="form-check-label" for="defaultCheck1" >
+                                    {{ wt|get_value_from_dict:'type' }}
+                                  </label><br>
+                                {% else %}
+                                  <input class="form-check-input" type="checkbox" value="{{ wt|get_value_from_dict:'id' }}" name="emp_wt" id="defaultCheck1" >
+                                  <label class="form-check-label" for="defaultCheck1">
+                                    {{ wt|get_value_from_dict:'type' }}
+                                  </label><br>
+                                {% endif %}
 
-  <!-- Bootstrap core JavaScript-->
-  <script src="/static/vendor/jquery/jquery.min.js"></script>
-  <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+                            {% endfor %}
+                              <br><br>
+                            {% if emp|get_value_from_dict:'exclusive' %}
+                              <input type="checkbox" class="custom-control-input" id="excl_type" value="on" name="excl_type" checked >
+                              <label class="custom-control-label" for="excl_type"> Статус универсала </label>
+                          {% else %}
+                              <input type="checkbox" class="custom-control-input" id="excl_type" value="off" name="excl_type"  >
+                              <label class="custom-control-label" for="excl_type"> Статус универсала </label>
+                          {% endif %}
+                          </div>
+                      <br><br>
 
-  <!-- Core plugin JavaScript-->
-  <script src="/static/vendor/jquery-easing/jquery.easing.min.js"></script>
+                      <div class="container">
+                        <div class="row">
+                          <button class="btn btn-danger col-6" type="button" name="block" data-dismiss="modal" >
+                            Заблокировать
+                          </button>
+                          <button class="btn btn-info col-6" type="button" name="freeze" data-dismiss="modal">
+                            Заморозить
+                          </button>
+                        </div>
+                      </div>
 
-  <!-- Custom scripts for all pages-->
-  <script src="/static/js/sb-admin-2.min.js"></script>
+                    </div>
+                    <div class="modal-footer">
 
-  <!-- Page level plugins -->
-  <script src="/static/vendor/datatables/jquery.dataTables.min.js"></script>
-  <script src="/static/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+                      <button class="btn btn-success" type="submit">Сохранить</button>
+                      <button class="btn btn-secondary" type="submit" data-dismiss="modal" aria-label="Close">Отмена</button>
+                    </div>
+                                  </form>
 
-  <!-- Page level custom scripts -->
-  <script src="/static/js/demo/datatables-demo.js"></script>
-
-</body>
-
-</html>
+                  </div>
+                </div>
+              </div>
+{% endfor %}
+{% endblock %}

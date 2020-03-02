@@ -36,3 +36,11 @@ def get_city_name(city_id):
         return models.City.objects.filter(id=city_id).values('city')[0]['city']
     except TypeError:
         return 'err'
+
+
+@register.filter
+def do_abs(number):
+    try:
+        return abs(number)
+    except TypeError:
+        return number

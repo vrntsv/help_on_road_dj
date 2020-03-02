@@ -2,57 +2,12 @@
 {% block tittle %}
         <title>Админ</title>
 {% endblock %}
+{% load custom_filters %}
+
 {% block content %}
+    {% if request.user.is_superuser %}
     <!-- Content Wrapper -->
-    <div id="content-wrapper" class="d-flex flex-column">
 
-      <!-- Main Content -->
-      <div id="content">
-
-        <!-- Topbar -->
-        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-
-          <!-- Sidebar Toggle (Topbar) -->
-          <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-            <i class="fa fa-bars"></i>
-          </button>
-
-          <!-- Topbar Search -->
-          <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-            <div class="input-group">
-              <input type="text" class="form-control bg-light border-0 small" placeholder="Поиск" aria-label="Search" aria-describedby="basic-addon2">
-              <div class="input-group-append">
-                <button class="btn btn-primary" type="button">
-                  <i class="fas fa-search fa-sm"></i>
-                </button>
-              </div>
-            </div>
-          </form>
-
-          <!-- Topbar Navbar -->
-          <ul class="navbar-nav ml-auto">
-            <!-- Nav Item - Search Dropdown (Visible Only XS) -->
-            <li class="nav-item dropdown no-arrow d-sm-none">
-              <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-search fa-fw"></i>
-              </a>
-              <!-- Dropdown - Messages -->
-              <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in" aria-labelledby="searchDropdown">
-                <form class="form-inline mr-auto w-100 navbar-search">
-                  <div class="input-group">
-                    <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
-                    <div class="input-group-append">
-                      <button class="btn btn-primary" type="button">
-                        <i class="fas fa-search fa-sm"></i>
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              </div>
-            </li>
-          </ul>
-        </nav>
-        <!-- End of Topbar -->
 
         <!-- Begin Page Content -->
         <!-- Begion Info-card  -->
@@ -66,7 +21,7 @@
 	                  <div class="row no-gutters align-items-center">
 	                    <div class="col mr-2">
 	                      <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Депозитов пополнено</div>
-	                      <div class="h5 mb-0 font-weight-bold text-gray-800">{% if sum_transfer %}{{sum_transfer}} {% else %} 0 {% endif %}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{% if sum_transfer %}{{sum_transfer}}{% else %} 0 {% endif %}</div>
 	                    </div>
 	                    <div class="col-auto">
 	                      <i class="fas fa-ruble-sign fa-2x text-gray-300"></i>
@@ -98,7 +53,7 @@
 	                  <div class="row no-gutters align-items-center">
 	                    <div class="col mr-2">
 	                      <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Депозитов осталось</div>
-	                      <div class="h5 mb-0 font-weight-bold text-gray-800">{% if left_transfers %} {{ left_transfers }} {% else %} 0 {% endif %}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{% if left_transfers %}<a href="{% url 'site_backend:am_pb' %}"> {{ left_transfers }} </a>{% else %} 0 {% endif %}</div>
 	                    </div>
 	                    <div class="col-auto">
 	                      <i class="fas fa-ruble-sign fa-2x text-gray-300"></i>
@@ -131,7 +86,7 @@
 	                  <div class="row no-gutters align-items-center">
 	                    <div class="col mr-2">
 	                      <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">БОНУСОВ ПО РЕФЕРАЛЬНОЙ ПРОГРАММЕ</div>
-	                      <div class="h5 mb-0 font-weight-bold text-gray-800">{% if sum_promo %} {{ sum_promo }} {% else %} 0 {% endif %}</div>
+	                      <div class="h5 mb-0 font-weight-bold text-gray-800">{% if sum_promo %} <a href="{% url "site_backend:am_reg_today" %}">{{ sum_promo }} </a>{% else %} 0 {% endif %}</div>
 	                    </div>
 	                    <div class="col-auto">
 	                      <i class="fas fa-ruble-sign fa-2x text-gray-300"></i>
@@ -148,7 +103,7 @@
 	                  <div class="row no-gutters align-items-center">
 	                    <div class="col mr-2">
 	                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Cамый первый</div>
-	                      <div class="h5 mb-0 font-weight-bold text-gray-800">{{ sum_very_first }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><a href="{% url "site_backend:am_url_vf" %}">{{ sum_very_first }}</a></div>
 	                    </div>
 	                    <div class="col-auto">
 	                      <i class="fas fa-ruble-sign fa-2x text-gray-300"></i>
@@ -163,8 +118,8 @@
 	                <div class="card-body">
 	                  <div class="row no-gutters align-items-center">
 	                    <div class="col mr-2">
-	                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Долг эксклюзивов</div>
-	                      <div class="h5 mb-0 font-weight-bold text-gray-800">{% if sum_excl_debt %} {{ sum_excl_debt }} {% else %} 0 {% endif %}</div>
+	                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Долг универсалов</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{% if sum_excl_debt %} <a href="{% url "site_backend:am_excl_nb" %}"> {{ sum_excl_debt|do_abs }} </a>{% else %} 0 {% endif %}</div>
 	                    </div>
 	                    <div class="col-auto">
 	                      <i class="fas fa-ruble-sign fa-2x text-gray-300"></i>
@@ -320,4 +275,61 @@
 
   </div>
   <!-- End of Page Wrapper -->
+    {% else %}
+
+      <!-- Deals history -->
+  <div class="row">
+      <div class="card shadow col">
+        <div class="card-header">
+          <h2>История заказов</h2>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+              <thead>
+                <tr>
+                  <!--
+                    💳 / 💵 - нал/безнал
+                  -->
+                  <th>ID пользователя</th>
+                  <th>Дата</th>
+                  <th>ID сделки</th>
+                  <th>Тип</th>
+                  <th>Процент</th>
+                  <th>Цена от исполнителя</th>
+                  <th>Наша коммиссия</th>
+                  <th>Зачислено</th>
+                  <th>Партнер</th>
+                  <th>Комментарий</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for deal in deals %}
+
+                <tr>
+                  <!-- https://tehpomosh.amocrm.ru/leads/detail/23363851 пример ссылки по id сделки-->
+                  <td>{{ deal|get_value_from_dict:'id_user_id' }}</td>
+                  <td>{{ deal|get_value_from_dict:'date' }}</td>
+                  <td>{{ deal|get_value_from_dict:'id' }}</td>
+
+                  <td class=" text-center" data-toggle="tooltip" data-placement="right" title="💳 - БЕЗналичные/💵- наличные">{% if deal|get_value_from_dict:'self_employeed' %}💳{% else %}💵{% endif %}</td>
+                  <td>{{ deal|get_value_from_dict:'commission_precent' }}%</td>
+                  <td >{{ deal|get_value_from_dict:'value' }} ₽</td>
+                {% with  value=deal|get_value_from_dict:'value' percent=deal|get_value_from_dict:'commission_precent' %}
+                  <td class="text-success">{{ value|count_percent:percent }} ₽</td>
+                  <td class="text-danger">{{ value|count_user_percent:percent }} ₽</td>
+                {% endwith %}
+                  <td> {% if deal|get_value_from_dict:'id_proped' %}<a href="{% url "site_backedn:master_card_url" deal|get_value_from_dict:'id_proped' %}">{{deal|get_value_from_dict:'id_proped'}}</a> {% else %} - {% endif %}</td>
+                  <td class=" text-center" >
+                   {% if deal|get_value_from_dict:'comment' %}{{deal|get_value_from_dict:'comment'}} {% else %} - {% endif %}</td>
+
+                <tr>
+                                  {% endfor %}
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    {% endif %}
 {% endblock %}

@@ -3,6 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate,login
 from django.http import HttpResponse
 from django.urls import reverse
+from django.contrib.auth import logout
 
 from . import services
 from . import bot
@@ -27,6 +28,12 @@ def login_router(request):
                 'invalid_data': True,
             })
 
+
+def logout_router(request):
+    print('do logout')
+    logout(request)
+    return redirect('/login')
+
     # No backend authenticated the credentials
 
 
@@ -34,24 +41,31 @@ def index_router(request):
     print(request.user)
     if request.user.is_authenticated:
         if request.method == 'GET':
-            return render(request, 'site_backend/index.html',
-                          {
-                              'sum_very_first': services.get_sum_very_first(),
-                              'sum_transfer': services.get_sum_transfer_by_date(),
-                              'spent_transfer': services.get_spent_transfer_by_date(),
-                              'sum_proped': services.get_sum_proped_by_date(),
-                              'sum_promo': services.get_sum_promo_by_date(),
-                              'sum_bonuses': services.get_sum_bonuses(),
-                              'sum_excl_debt': services.sum_excl_debt(),
-                              'left_transfers': services.get_sum_left_transfers(),
-                              'work_types': services.get_work_types(),
-                              'very_first_emps': services.get_employees_very_first(),
-                              'cites': services.get_active_cities(),
-                              'emp_ammount_in_cities': services.get_emp_ammount_in_cities(),
-                              'exclusive_by_wt': services.get_emp_ammount_wt(exclusive=True),
-                              'active_by_wt': services.get_emp_ammount_wt(active=True),
-                           }
-                          )
+            if request.user.is_superuser:
+                return render(request, 'site_backend/index.html',
+                              {
+                                  'sum_very_first': services.get_sum_very_first(),
+                                  'sum_transfer': services.get_sum_transfer_by_date(),
+                                  'spent_transfer': services.get_spent_transfer_by_date(),
+                                  'sum_proped': services.get_sum_proped_by_date(),
+                                  'sum_promo': services.get_sum_promo_by_date(),
+                                  'sum_bonuses': services.get_sum_bonuses(),
+                                  'sum_excl_debt': services.sum_excl_debt(),
+                                  'left_transfers': services.get_sum_left_transfers(),
+                                  'work_types': services.get_work_types(),
+                                  'very_first_emps': services.get_employees_very_first(),
+                                  'cites': services.get_active_cities(),
+                                  'emp_ammount_in_cities': services.get_emp_ammount_in_cities(),
+                                  'exclusive_by_wt': services.get_emp_ammount_wt(exclusive=True),
+                                  'active_by_wt': services.get_emp_ammount_wt(active=True),
+                               }
+                              )
+            else:
+                return render(request, 'site_backend/index.html',
+                              {
+                                  'deals': services.get_active_deals()
+                                    }
+                              )
         elif request.method == 'POST':
             start_date = request.POST.get('start_date')
             end_date = request.POST.get('end_date')
@@ -269,10 +283,47 @@ def directions_change_router(request, wt_id):
 
 def active_masters_router(request):
     if request.user.is_authenticated:
+        if request.method == 'GET':
+            return render(request, 'site_backend/active_masters.html', {
+                'active_masters': services.get_active_masters_info(),
+                'work_types': services.get_work_types()
+            })
+        return HttpResponse(status=405)
+    else:
+        return redirect('/login')
+
+
+def edit_users_data_router(request, master_id):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            services.edit_emp(master_id, request.POST.get('full_name'), request.POST.get('phone'),
+                              request.POST.getlist('emp_wt'), request.POST.get('excl_type'))
+            return render(request, 'site_backend/active_masters.html', {
+                'active_masters': services.get_active_masters_info(),
+                'work_types': services.get_work_types()
+            })
+
+    return HttpResponse(status=405)
+
+
+def frozen_masters_router(request):
+    if request.user.is_authenticated:
 
         if request.method == 'GET':
             return render(request, 'site_backend/active_masters.html', {
-                'active_masters': services.get_active_masters_info()
+                'active_masters': services.get_active_masters_info(freeze=True)
+            })
+        return HttpResponse(status=405)
+    else:
+        return redirect('/login')
+
+
+def blocked_masters_router(request):
+    if request.user.is_authenticated:
+
+        if request.method == 'GET':
+            return render(request, 'site_backend/active_masters.html', {
+                'active_masters': services.get_active_masters_info(blocked=True)
             })
         return HttpResponse(status=405)
     else:
@@ -316,6 +367,33 @@ def active_master_vf(request):
         if request.method == 'GET':
             return render(request, 'site_backend/active_masters.html', {
                 'active_masters': services.get_active_masters_info(vf=True)
+            })
+        return HttpResponse(status=405)
+
+
+def active_masters_excl_negative_balance(request):
+    if request.user.is_authenticated:
+        if request.method == 'GET':
+            return render(request, 'site_backend/active_masters.html', {
+                'active_masters': services.get_active_masters_info(exclusive=1, negative_balance=1)
+            })
+        return HttpResponse(status=405)
+
+
+def active_masters_positive_balance(request):
+    if request.user.is_authenticated:
+        if request.method == 'GET':
+            return render(request, 'site_backend/active_masters.html', {
+                'active_masters': services.get_active_masters_info(positive_balance=1)
+            })
+        return HttpResponse(status=405)
+
+
+def active_masters_reg_today(request):
+    if request.user.is_authenticated:
+        if request.method == 'GET':
+            return render(request, 'site_backend/active_masters.html', {
+                'active_masters': services.get_active_masters_info(registered_today=1)
             })
         return HttpResponse(status=405)
 

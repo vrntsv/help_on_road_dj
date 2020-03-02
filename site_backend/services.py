@@ -2,7 +2,12 @@ from . import models
 from django.db.models import Sum, Count
 import datetime
 from django.contrib.auth.models import User
-from datetime import date, timedelta
+from datetime import date
+from datetime import timedelta
+
+from django.db import connection
+
+
 
 
 def dictfetchall(cursor):
@@ -129,7 +134,7 @@ def sum_excl_debt():
     Задолжность эксклюзовов
     :return:
     """
-    sum = models.Employees.objects.filter(exclusive__exact=1).aggregate(Sum('balance'))
+    sum = models.Employees.objects.filter(exclusive__exact=1, balance__lt=0).aggregate(Sum('balance'))
     print('sum ecxl', sum)
     return sum['balance__sum']
 
@@ -429,7 +434,9 @@ def get_online_ammount_wt():
 
 
 
-def get_active_masters_info(wt=None, city=None, exclusive=None, active=None, vf=None):
+def get_active_masters_info(wt=None, city=None, exclusive=None, active=None,
+                            vf=None, freeze=None, blocked=None, negative_balance=None,
+                            positive_balance=None, registered_today=None):
     emp_info = []
     emps = models.Employees.objects.all().filter(status=1)
     if wt:
@@ -440,13 +447,21 @@ def get_active_masters_info(wt=None, city=None, exclusive=None, active=None, vf=
         emps = emps.filter(exclusive=1)
     if active:
         emps = emps.filter(active=1)
-
-
-    print('emps val', emps.values().__len__())
+    if freeze:
+        emps = emps.filter(status=2)
+    if blocked:
+        emps = emps.filter(status=3)
+    if blocked:
+        emps = emps.filter(status=3)
+    if negative_balance:
+        emps = emps.filter(balance__lte=0)
+    if positive_balance:
+        emps = emps.filter(balance__gt=0)
+    if registered_today:
+        emps = emps.filter(reg_date=datetime.datetime.date.today)
     for emp in emps.values():
         if vf:
             if list(models.VeryFirst.objects.filter(id=emp['id']).values()) == []:
-                print('vf')
                 continue
         referal_income = models.Employees.objects.all().filter(promo_id=emp['id']).aggregate(Count('promo_id'))['promo_id__count'] * 250
         proped_deals_count = models.Deals.objects.all().filter(id_proped=emp['id'], status=4).aggregate(Count('id_proped'))['id_proped__count']
@@ -456,10 +471,14 @@ def get_active_masters_info(wt=None, city=None, exclusive=None, active=None, vf=
             very_first = None
         else:
             very_first = 1
+        emp_wt = []
+        for wt in get_emp_wt(emp['id']):
+            emp_wt.append(wt['id_work_type_id'])
         emp_info.append(
             {
                 'id': emp['id'],
                 'full_name': emp['full_name'],
+                'emp_wt': emp_wt,
                 'id_city': emp['id_city'],
                 'name_city': models.City.objects.filter(id=emp['id_city']).values('city')[0]['city'],
                 'reg_date': emp['reg_date'],
@@ -482,6 +501,30 @@ def get_active_masters_info(wt=None, city=None, exclusive=None, active=None, vf=
 def get_emp_wt(master_id):
     wt = models.EmployeesWorkType.objects.filter(id_user=master_id).values('id_work_type_id')
     return wt
+
+
+def get_emp_wt_list(master_id):
+    emp_wt = []
+    for wt in get_emp_wt(master_id):
+        emp_wt.append(wt['id_work_type_id'])
+    return emp_wt
+
+
+def edit_emp(master_id, full_name, phone, wt_list, excl):
+    cursor = connection.cursor()
+    master = models.Employees.objects.get(id=master_id)
+    master.full_name = full_name
+    master.phone = phone
+    models.EmployeesWorkType.objects.filter(id_user_id=master_id).delete()
+    if excl == 'on':
+        master.exclusive = 1
+    else:
+        master.exclusive = None
+    for wt in wt_list:
+        cursor.execute('INSERT INTO employees_work_type(id_user, id_work_type) '
+                                                     'VALUES (%s, %s)', [master_id, int(wt)])
+        connection.commit()
+    master.save()
 
 
 def get_not_registered_masters():
@@ -580,6 +623,8 @@ def get_master_card_info(master_id):
         'transfers': list(users_transfers),
     }
 
+def get_active_deals():
+    return models.Deals.objects.all().filter(status=1).values()
 
 def get_history():
     return models.UsersHistory.objects.all().values()

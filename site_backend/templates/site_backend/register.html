@@ -1,29 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'site_backend/base.html' %}
+
 {% load djutils %}
 {% load custom_filters %}
-<head>
-
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
-
-  <title>SB Admin 2 - Tables</title>
-
-  <!-- Custom fonts for this template -->
-  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-
-  <!-- Custom styles for this template -->
-  <link href="/static/css/sb-admin-2.min.css" rel="stylesheet">
-  <link href="/static/css/custom.css" rel="stylesheet">
-
-  <!-- Custom styles for this page -->
-  <link href="/static/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
-
-</head>
+{% block content %}
 
 <body id="page-top">
 
@@ -77,20 +56,20 @@
                               <div class="dropdown-menu">
                                   {% for wt in wt_list %}
                                       {% if wt|get_value_from_dict:'id' in emp|get_value_from_dict:'emp_wt' %}
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="{{ wt|get_value_from_dict:'id' }}" name="emp_wt" id="defaultCheck1" checked>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="{{ wt|get_value_from_dict:'id' }}" name="emp_wt" id="defaultCheck1" checked>
                                             <label class="form-check-label" for="defaultCheck1">
-                                                {{ wt|get_value_from_dict:'id'|get_wt_name }}
+                                              {{ wt|get_value_from_dict:'id'|get_wt_name }}
                                             </label>
-                                            </div>
+                                          </div>
                                       {% else %}
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="{{ wt|get_value_from_dict:'id' }}" name="emp_wt" id="defaultCheck1" >
-                                            <label class="form-check-label" for="defaultCheck1">
+                                            <div class="form-check">
+                                              <input class="form-check-input" type="checkbox" value="{{ wt|get_value_from_dict:'id' }}" name="emp_wt" id="defaultCheck1" >
+                                              <label class="form-check-label" for="defaultCheck1">
                                                 {{ wt|get_value_from_dict:'id'|get_wt_name }}
-                                            </label>
+                                              </label>
                                             </div>
-                                      {%> endif %}
+                                      {% endif %}
                                     {% endfor %}
 
                               </div>
@@ -154,16 +133,16 @@
     <i class="fas fa-angle-up"></i>
   </a>
 
+  {% endblock %}
   <script>
         $( "#freeze_emp" ).load(function() {
             alert("Пользователь был заморожен")
         });
-
-
         $( "#warning-btn" ).load(function() {
           $( "div.warning" ).fadeIn( 300 ).delay( 1500 ).fadeOut( 400 );
         });
   </script>
+  
   <!-- Bootstrap core JavaScript-->
   <script src="/static/vendor/jquery/jquery.min.js"></script>
   <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
