@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate,login
 from django.http import HttpResponse
+from django.views.decorators.cache import cache_page
+
 from django.urls import reverse
 from django.contrib.auth import logout
 
@@ -15,7 +17,8 @@ def login_router(request):
     if request.method == 'GET':
         if request.user.is_authenticated:
             return redirect('/')
-        return render(request, 'site_backend/login.html')
+        else:
+            return render(request, 'site_backend/login.html')
     elif request.method == 'POST':
         print(request.POST)
         user = authenticate(username=request.POST.get('username'), password=request.POST.get('password'))
@@ -34,14 +37,14 @@ def logout_router(request):
     logout(request)
     return redirect('/login')
 
-    # No backend authenticated the credentials
 
 
+@cache_page(60*15)
 def index_router(request):
-    print(request.user)
     if request.user.is_authenticated:
         if request.method == 'GET':
             if request.user.is_superuser:
+                print('is_super')
                 return render(request, 'site_backend/index.html',
                               {
                                   'sum_very_first': services.get_sum_very_first(),
@@ -67,38 +70,41 @@ def index_router(request):
                                     }
                               )
         elif request.method == 'POST':
-            start_date = request.POST.get('start_date')
-            end_date = request.POST.get('end_date')
-            if start_date != '' and end_date != '':
-                return render(request, 'site_backend/index.html',
-                              {
-                                  'sum_very_first': services.get_sum_very_first(),
-                                  'sum_transfer': services.get_sum_transfer_by_date(start_date, end_date),
-                                  'spent_transfer': services.get_spent_transfer_by_date(start_date, end_date),
-                                  'sum_proped': services.get_sum_proped_by_date(start_date, end_date),
-                                  'sum_promo': services.get_sum_promo_by_date(start_date, end_date),
-                                  'sum_bonuses': services.get_sum_bonuses(),
-                                  'sum_excl_debt': services.sum_excl_debt(),
-                                  'left_transfers': services.get_sum_left_transfers(),
-                                  'very_first_emps': services.get_employees_very_first(),
-                                  'cites': services.get_active_cities(),
-                                  'emp_ammount_in_cities': services.get_emp_ammount_in_cities(),
-                                  'exclusive_by_wt': services.get_emp_ammount_wt(exclusive=True),
-                                  'active_by_wt': services.get_emp_ammount_wt(active=True),
+            if request.user.is_superuser:
+                start_date = request.POST.get('start_date')
+                end_date = request.POST.get('end_date')
+                if start_date != '' and end_date != '':
+                    return render(request, 'site_backend/index.html',
+                                  {
+                                      'sum_very_first': services.get_sum_very_first(),
+                                      'sum_transfer': services.get_sum_transfer_by_date(start_date, end_date),
+                                      'spent_transfer': services.get_spent_transfer_by_date(start_date, end_date),
+                                      'sum_proped': services.get_sum_proped_by_date(start_date, end_date),
+                                      'sum_promo': services.get_sum_promo_by_date(start_date, end_date),
+                                      'sum_bonuses': services.get_sum_bonuses(),
+                                      'sum_excl_debt': services.sum_excl_debt(),
+                                      'left_transfers': services.get_sum_left_transfers(),
+                                      'very_first_emps': services.get_employees_very_first(),
+                                      'cites': services.get_active_cities(),
+                                      'emp_ammount_in_cities': services.get_emp_ammount_in_cities(),
+                                      'exclusive_by_wt': services.get_emp_ammount_wt(exclusive=True),
+                                      'active_by_wt': services.get_emp_ammount_wt(active=True),
 
-                                     }
-                              )
-            else:
-                redirect('/')
-        return HttpResponse(status=405)
+                                         }
+                                  )
+                else:
+                    return render(request, 'site_backend/index.html',
+                                  {
+                                      'deals': services.get_active_deals()
+                                  })
+
     else:
         return redirect('/login')
 
 
 def tech_router(request):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and request.user.is_superuser:
         if request.method == 'GET':
-            print(services.get_amo_key())
             return render(request, 'site_backend/tech.html',
                           {
                               'amo_key': services.get_amo_key(),
@@ -110,7 +116,7 @@ def tech_router(request):
 
 
 def tech_alter_key_router(request):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and request.user.is_superuser:
         if request.method == 'POST':
             services.alter_amo_key(request.POST.get('new_key'))
             return render(request, 'site_backend/tech.html',
@@ -125,10 +131,9 @@ def tech_alter_key_router(request):
 
 
 def tech_add_city_router(request):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and request.user.is_superuser:
 
         if request.method == 'POST':
-            print(request.POST)
             services.add_city(request.POST.get('new_city'))
             return render(request, 'site_backend/tech.html',
                           {
@@ -141,7 +146,7 @@ def tech_add_city_router(request):
 
 
 def tech_delete_city_router(request):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and request.user.is_superuser:
 
         if request.method == 'POST':
             services.delete_city(request.POST.get('city_id'))
@@ -244,7 +249,6 @@ def directions_router(request):
                               'work_types': services.get_work_types(),
                           })
         elif request.method == 'POST':
-            print(request.POST)
             try:
                 services.add_new_work_type(request.POST.get('directions_name'),
                 request.POST.get('step_0'),
@@ -286,6 +290,18 @@ def active_masters_router(request):
         if request.method == 'GET':
             return render(request, 'site_backend/active_masters.html', {
                 'active_masters': services.get_active_masters_info(),
+                'work_types': services.get_work_types()
+            })
+        return HttpResponse(status=405)
+    else:
+        return redirect('/login')
+
+
+def active_masters_search_router(request):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            return render(request, 'site_backend/active_masters.html', {
+                'active_masters': services.get_active_masters_info(search=request.POST.get('search_input')),
                 'work_types': services.get_work_types()
             })
         return HttpResponse(status=405)
@@ -403,7 +419,6 @@ def master_card_router(request, master_id):
 
         if request.method == 'GET':
             #print(json.dumps(services.get_master_card_info(master_id), sort_keys=True, indent=1, cls=DjangoJSONEncoder))
-            print(services.get_users_deals(master_id))
             return render(request, 'site_backend/master_card.html',
                           {
                               'info': services.get_master_card_info(master_id),
@@ -455,7 +470,6 @@ def registration_router(request):
                           })
         elif request.method == 'POST':
             if request.POST['confirm'] == 'yes':
-                print(request.POST)
                 services.add_emp(request.POST.get('emp_id'), request.POST.get('emp_wt'))
                 return render(request, 'site_backend/register.html',
                               {
@@ -463,7 +477,6 @@ def registration_router(request):
                                   'wt_list': services.get_wt_list(),
                               })
             else:
-                print(request.POST)
                 services.freeze_emp(request.POST.get('emp_id'))
                 return render(request, 'site_backend/register.html',
                               {
@@ -480,7 +493,6 @@ def operators_router(request):
     if request.user.is_authenticated:
 
         if request.method == 'GET':
-            print(services.get_operators())
             return render(request, 'site_backend/operators.html',
                           {
                             'operators': services.get_operators()
@@ -519,7 +531,6 @@ def history_router(request):
     if request.user.is_authenticated:
 
         if request.method == 'GET':
-            print(services.get_history())
             return render(request, 'site_backend/history.html',
                           {
                                 'history': services.get_history()
@@ -535,8 +546,7 @@ def clients_router(request):
                                 'clients': services.get_clients()
                             })
         elif request.method == 'POST':
-            print(request.POST)
-            print('teststset')
+
             return render(request, 'site_backend/client.html',
                             {
                                 'clients': services.get_clients()

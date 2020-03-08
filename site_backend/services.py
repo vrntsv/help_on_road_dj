@@ -94,13 +94,11 @@ def get_sum_proped_by_date(start_date=date.today() - timedelta(days=31), end_dat
     :return:
     """
     sum = 0
-    proped_ids = models.PropedDeals.objects.values('id_deal')
-    print(proped_ids)
+    proped_ids = models.PropedDeals.objects.values()
     for id in proped_ids:
         comm = models.Deals.objects.filter(date_filing__gte=start_date,
                                            date_filing__lte=end_date,
-                                           id=id['id_deal']).aggregate(Sum('commission'))
-        print('comm', comm)
+                                           id=id['id_deal_id']).aggregate(Sum('commission'))
         if comm['commission__sum']:
             sum += int(int(comm['commission__sum'])*0.33)
     return sum
@@ -135,7 +133,6 @@ def sum_excl_debt():
     :return:
     """
     sum = models.Employees.objects.filter(exclusive__exact=1, balance__lt=0).aggregate(Sum('balance'))
-    print('sum ecxl', sum)
     return sum['balance__sum']
 
 
@@ -165,12 +162,10 @@ def get_work_types():
                 'excl_type': wt['excl_type'],
                 'post_pay': wt['post_pay']
             })
-    print(directions)
     return directions
 
 
 def change_wt(wt_id, wt_data):
-    print('tqtwet', wt_data)
     wt = models.WorkType.objects.get(id=wt_id)
     wt.type = wt_data['type']
     wt.comm_stage_0 = wt_data['step0']
@@ -201,20 +196,17 @@ def get_employees_very_first():
     """
     full_data = []
     very_first_emps = models.VeryFirst.objects.values()
-    print('very_first_emps', very_first_emps)
     for very_first_data in very_first_emps:
-        print('\n\n', very_first_data)
-        vf_data = models.VeryFirst.objects.filter(id__veryfirst=very_first_data['id_id']).values()
-        emp_data = models.Employees.objects.filter(id=very_first_data['id_id']).values()
-        full_data.append({'very_first_data': list(vf_data),
-                          'emp_data': list(emp_data)})
-        print(full_data)
+        vf_data = models.VeryFirst.objects.filter(id_user=very_first_data['id_user_id']).values()
+        emp_data = models.Employees.objects.filter(id=very_first_data['id_user_id']).values()
+        full_data.append({'very_first_data': vf_data,
+                          'emp_data': emp_data})
     return full_data
 
 
 def get_active_cities():
     cities = models.City.objects.filter(active=1).values()
-    return list(cities)
+    return cities
 
 
 def get_emp_ammount_in_cities():
@@ -436,7 +428,7 @@ def get_online_ammount_wt():
 
 def get_active_masters_info(wt=None, city=None, exclusive=None, active=None,
                             vf=None, freeze=None, blocked=None, negative_balance=None,
-                            positive_balance=None, registered_today=None):
+                            positive_balance=None, registered_today=None, search=None):
     emp_info = []
     emps = models.Employees.objects.all().filter(status=1)
     if wt:
@@ -458,16 +450,18 @@ def get_active_masters_info(wt=None, city=None, exclusive=None, active=None,
     if positive_balance:
         emps = emps.filter(balance__gt=0)
     if registered_today:
-        emps = emps.filter(reg_date=datetime.datetime.date.today)
+        emps = emps.filter(reg_date=datetime.date.today)
+    if search:
+        emps = emps.filter(full_name__contains=search) | emps.filter(phone__contains=search)
     for emp in emps.values():
         if vf:
-            if list(models.VeryFirst.objects.filter(id=emp['id']).values()) == []:
+            if list(models.VeryFirst.objects.filter(id_user=emp['id']).values()) == []:
                 continue
         referal_income = models.Employees.objects.all().filter(promo_id=emp['id']).aggregate(Count('promo_id'))['promo_id__count'] * 250
         proped_deals_count = models.Deals.objects.all().filter(id_proped=emp['id'], status=4).aggregate(Count('id_proped'))['id_proped__count']
         closed_deals_count = models.Deals.objects.all().filter(id_user=emp['id'], status=4).aggregate(Count('id_user'))['id_user__count']
         droped_deals_count = models.Deals.objects.all().filter(id_user=emp['id'], status=-1).aggregate(Count('id_user'))['id_user__count']
-        if list(models.VeryFirst.objects.filter(id=emp['id']).values()) == []:
+        if list(models.VeryFirst.objects.filter(id_user=emp['id']).values()) == []:
             very_first = None
         else:
             very_first = 1
@@ -554,9 +548,7 @@ def add_emp(emp_id, wt_data):
     emp = models.Employees.objects.get(id=emp_id)
     emp.status = 1
     emp.save()
-    print(wt_data)
     for wt_id in wt_data:
-        print(wt_id, '\n')
         try:
             wt = models.EmployeesWorkType(id_user=models.Employees.objects.get(id=emp_id),
                                           id_work_type=models.WorkType.objects.get(id=wt_id))
@@ -567,7 +559,7 @@ def add_emp(emp_id, wt_data):
 
 def create_operator(name, token):
     try:
-        operator_auth = User.objects.create_user(username=name, password=token)
+        operator_auth = User.objects.create_user(username=name, password=token,)
         operator_data = models.Operators(id=operator_auth.id, name=name, token=token)
         operator_auth.save()
         operator_data.save()

@@ -104,7 +104,7 @@
                           <th>{{ emp|get_value_from_dict:'emp_data'|get_value_from_dict:'phone'  }}</th>
                           <th>{{ emp|get_value_from_dict:'emp_data'|get_value_from_dict:'about_us' }}</th>
                           <th>{{ emp|get_value_from_dict:'emp_data'|get_value_from_dict:'reg_date' }}</th>
-                          <th><a href="">{{ emp|get_value_from_dict:'emp_data'|get_value_from_dict:'promo_id' }}</a></th>
+                          <th{% if emp|get_value_from_dict:'emp_data'|get_value_from_dict:'promo_id' and emp|get_value_from_dict:'emp_data'|get_value_from_dict:'promo_id' != 'None' %} {{ emp|get_value_from_dict:'emp_data'|get_value_from_dict:'promo_id' }} {% else %} - {% endif %}</th>
                           <th>
                             <button type="submit" name="confirm" value="yes" class='col btn btn btn-success'>Подтвердить</button>
                             <button type="submit" name="confirm" value="no"  class='col btn btn btn-danger'>Удалить</button>

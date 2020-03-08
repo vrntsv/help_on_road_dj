@@ -12,14 +12,19 @@ def multiply(value, arg):
 
 @register.filter
 def count_percent(value, percent):
-    return value * percent / 100
+    try:
+        return value * percent / 100
+    except:
+        return 'err'
 
 
 @register.filter
 def count_user_percent(value, percent):
-    percent = 100 - percent
-    return value * percent / 100
-
+    try:
+        user_percent = 100 - percent
+        return value * user_percent / 100
+    except:
+        return 'err'
 
 @register.filter
 def get_wt_name(wt_id):
@@ -34,7 +39,7 @@ def get_wt_name(wt_id):
 def get_city_name(city_id):
     try:
         return models.City.objects.filter(id=city_id).values('city')[0]['city']
-    except TypeError:
+    except Exception:
         return 'err'
 
 

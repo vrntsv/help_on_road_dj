@@ -25,6 +25,7 @@ urlpatterns = [
     path('directions/', views.directions_router, name='directions_url'),
     path('directions?change=<int:wt_id>', views.directions_change_router, name='directions_change_url'),
     path('active_masters/', views.active_masters_router, name='am_url'),
+    path('active_masters/search', views.active_masters_search_router, name='am_search_url'),
     path('frozen_masters/', views.frozen_masters_router, name='frozen_url'),
     path('blocked_masters/', views.blocked_masters_router, name='blocked_url'),
     path('active_masters?wt=<int:wt_id>;city=<int:city_id>/', views.active_master_wt_city, name='am_url_wt_city'),

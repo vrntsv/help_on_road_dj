@@ -1,6 +1,9 @@
 {% extends 'site_backend/base.html' %}
 {% load static %}
 {% load djutils %}
+{% load cache %}
+{% cache 500 active_masters %}
+
 {% block content %}
 <body id="page-top">
 
@@ -163,3 +166,5 @@
               </div>
 {% endfor %}
 {% endblock %}
+    {% endcache %}
+

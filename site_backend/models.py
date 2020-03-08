@@ -192,13 +192,7 @@ class Operators(models.Model):
         db_table = 'operators'
 
 
-class PropedDeals(models.Model):
-    proped_id_user = models.ForeignKey(Employees, to_field='id', db_column='id_user',  on_delete=models.DO_NOTHING)
-    id_deal = models.BigIntegerField()
 
-    class Meta:
-        managed = False
-        db_table = 'proped_deals'
 
 
 class StatusDeal(models.Model):
@@ -264,7 +258,7 @@ class UsersTransfers(models.Model):
 
 
 class VeryFirst(models.Model):
-    id = models.ForeignKey('Employees', models.DO_NOTHING, db_column='id', primary_key=True)
+    id_user = models.ForeignKey('Employees', models.DO_NOTHING, db_column='id_user', primary_key=True)
     date_start = models.DateTimeField()
     date_end = models.DateTimeField()
     tariff = models.CharField(max_length=50)
@@ -279,7 +273,7 @@ class VeryFirst(models.Model):
 class Deals(models.Model):
     id = models.BigIntegerField(primary_key=True)
     id_user = models.ForeignKey(Employees, to_field='id', db_column='id_user',  on_delete=models.DO_NOTHING)
-    id_proped = models.BigIntegerField(blank=True, null=True)
+    id_proped = models.BigIntegerField(blank=True, null=True, unique=True)
     id_work_type = models.IntegerField()
     description = models.TextField()
     model_auto = models.CharField(max_length=255)
@@ -306,6 +300,15 @@ class Deals(models.Model):
     class Meta:
         managed = False
         db_table = 'deals'
+
+
+class PropedDeals(models.Model):
+    proped_id_user = models.ForeignKey(Employees,  to_field='id', db_column='proped_id_user',  on_delete=models.DO_NOTHING)
+    id_deal = models.ForeignKey(Deals, primary_key=True, to_field='id_proped',  db_column='id_deal', on_delete=models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'proped_deals'
 
 
 class WorkType(models.Model):
