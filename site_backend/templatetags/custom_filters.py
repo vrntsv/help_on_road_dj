@@ -17,6 +17,26 @@ def count_percent(value, percent):
     except:
         return 'err'
 
+@register.filter('get_amm_with_city')
+def get_amm_with_city(dict_data, key):
+    """
+    usage example {{ your_dict|get_value_from_dict:your_key }}
+    """
+    print(dict_data, key)
+    return dict_data, key
+
+@register.filter
+def pass_wt(_dict_id_city, _id_wt):
+    _dict, _id_city = _dict_id_city
+    print('_dict', _dict )
+    print('_id_city', _id_city )
+    for value in _dict:
+        print('value ', value)
+        if value['id_city'] == _id_city and value['id'] == _id_wt:
+            print('true')
+            return value['COUNT(employees.id)']
+    return None
+
 
 @register.filter
 def count_user_percent(value, percent):

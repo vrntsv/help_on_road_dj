@@ -2,88 +2,72 @@
 {% load static %}
 {% load djutils %}
 {% block content %}
-
-
-
-      <!-- Main Content -->
-        <!-- Begin Page Content -->
+    <div class="container">
         <div class="row">
-          <div class="col-6">
-            <div class="container-fluid">
-              <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                  <h4 class="m-0 font-weight-bold text-primary">Добавить оператора</h4>
-                </div>
-                        <div id="content">
+            <div class="col-6">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                      <h4 class="m-0 font-weight-bold text-primary">Добавить оператора</h4>
+                    </div>
+                    <div id="content">
+                        <div class="card-body">
+                      <div class="input-responsive">
+                          <form action="{% url "site_backend:operators_url" %}" method="post" name="add">
+                              {% csrf_token %}
 
-                <div class="card-body">
-                  <div class="input-responsive">
-                      <form action="{% url "site_backend:operators_url" %}" method="post" name="add">
-                          {% csrf_token %}
+                              <div class="form-row">
+                                <div class="form-group col-md-6">
+                                          <input name="name" type="text" class="form-control" id="inputEmail4" placeholder="Имя">
+                                        </div>
+                                <div class="form-group col-lg-6">
+                                  <input  name="value" type="text" class="form-control" id="inputCity" placeholder="Токен">
+                                </div>
 
-                          <div class="form-row">
-                            <div class="form-group col-md-6">
-                                      <input name="name" type="text" class="form-control" id="inputEmail4" placeholder="Имя">
-                                    </div>
-                            <div class="form-group col-lg-6">
-                              <input  name="value" type="text" class="form-control" id="inputCity" placeholder="Токен">
-                            </div>
-
+                          </div>
+                          <button  type="submit" class="col my-auto btn btn-primary">Добавить</button>
+                        </form>
                       </div>
-                      <button  type="submit" class="col my-auto btn btn-primary">Добавить</button>
-                    </form>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>   
-          </div>
-          <div class="col-6">
-            <div class="container-fluid">
-              <!-- DataTales Example -->
-              <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                  <h4 class="m-0 font-weight-bold text-primary">Активные операторы</h4>
-                </div>
-                <div class="card-body">
-                  <div class="table-responsive">
-                    <table class="table table-bordered" width="100%" cellspacing="0">
-                      <thead>
-                        <tr>
-                          <th>Имя</th>
-                          <th>Токен</th>
-                          <th></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                      {% for operator in operators|get_value_from_dict:'operator_data' %}
-                        <form method="post" action="{% url "site_backend:operators_delete_url" operator|get_value_from_dict:'id'%}" name="operator_delete">
-                            {% csrf_token %}
-                            <input type="hidden" name="id" value="{{ operator|get_value_from_dict:'id' }}">
-                            <tr>
-                              <td>{{ operator|get_value_from_dict:'name' }}</td>
-                              <td>{{ operator|get_value_from_dict:'token'}}</td>
-                              <td><button class='btn btn-danger'>Удалить</button></td>
-                            </tr>
-                          </form>
-                    {% endfor %}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
             </div>
-          </div>
+            <!-- Active operators table  -->
+            <div class="col-6">
+                <div class="container-fluid">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                          <h4 class="m-0 font-weight-bold text-primary">Активные операторы</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" width="100%" cellspacing="0">
+                              <thead>
+                                <tr>
+                                  <th>Имя</th>
+                                  <th>Токен</th>
+                                  <th></th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                              {% for operator in operators|get_value_from_dict:'operator_data' %}
+                                <form method="post" action="{% url "site_backend:operators_delete_url" operator|get_value_from_dict:'id'%}" name="operator_delete">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="id" value="{{ operator|get_value_from_dict:'id' }}">
+                                    <tr>
+                                      <td>{{ operator|get_value_from_dict:'name' }}</td>
+                                      <td>{{ operator|get_value_from_dict:'token'}}</td>
+                                      <td><button class='btn btn-danger'>Удалить</button></td>
+                                    </tr>
+                                  </form>
+                            {% endfor %}
+                              </tbody>
+                            </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <!-- /.container-fluid -->
-      </div>
-      </div>
-
-
-  <!-- End of Page Wrapper -->
-
-  <!-- Scroll to Top Button-->
-  <a class="scroll-to-top rounded" href="#page-top">
-    <i class="fas fa-angle-up"></i>
-  </a>
+    </div>
 
 {% endblock %}

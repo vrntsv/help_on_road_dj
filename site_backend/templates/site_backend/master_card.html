@@ -199,27 +199,29 @@
       </div>
     </div>
   </div>
+  {% if request.user.is_superuser %}
   <!-- Balance -->
-  <div class="row">
-    <div class="container col col-sm-12 col-md-6 col-xl-6 col-lg-6">
-      <div class="card shadow mb-4">
-        <div class="card-header">
-          <!-- 👑 Если эксклюзив-->
-            {% with info|get_value_from_dict:'user_data' as user_data %}
-                <h2 class='text-center'>Баланс {{ user_data.0|get_value_from_dict:'balance' }} ₽</h2>
-            {% endwith %}
-        </div>
-        <div class="card-body">
-          <div class="btn-group col">
-            <button class="btn btn-success " type="submit">Пополнить</button> 
-            <button class="btn btn-danger "type="submit">Списать</button> 
+      <div class="row">
+        <div class="container col col-sm-12 col-md-6 col-xl-6 col-lg-6">
+          <div class="card shadow mb-4">
+            <div class="card-header">
+              <!-- 👑 Если эксклюзив-->
+                {% with info|get_value_from_dict:'user_data' as user_data %}
+                    <h2 class='text-center'>Баланс {{ user_data.0|get_value_from_dict:'balance' }} ₽</h2>
+                {% endwith %}
+            </div>
+            <div class="card-body">
+              <div class="btn-group col">
+                <button class="btn btn-success " type="submit">Пополнить</button>
+                <button class="btn btn-danger "type="submit">Списать</button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-    <div class="container col col-sm-12 col-md-6 col-xl-6 col-lg-6">
-      <div class="card shadow mb-4">
-        <div class="card-header">
+        <div class="container col col-sm-12 col-md-6 col-xl-6 col-lg-6">
+          <div class="card shadow mb-4">
+            <div class="card-header">
+  {% endif %}
           <!-- 👑 Если эксклюзив-->
           <h2>История баланса</h2>
         </div>
@@ -295,7 +297,7 @@
                   <td class="text-success">{{ value|count_percent:percent }} ₽</td>
                   <td class="text-danger">{{ value|count_user_percent:percent }} ₽</td>
                 {% endwith %}
-                  <td> {% if deal|get_value_from_dict:'id_proped' %}<a href="{% url "site_backedn:master_card_url" deal|get_value_from_dict:'id_proped' %}">{{deal|get_value_from_dict:'id_proped'}}</a> {% else %} - {% endif %}</td>
+                  <td> {% if deal|get_value_from_dict:'id_proped' %}<a href="{% url "site_backend:master_card_url" deal|get_value_from_dict:'id_proped' %}">{{deal|get_value_from_dict:'id_proped'}}</a> {% else %} - {% endif %}</td>
                   <td class=" text-center" >
                     <div class="btn-group">
                       {% if deal|get_value_from_dict:'status' == 4%}
@@ -309,11 +311,14 @@
                         {% else %}
                           <td class='text-warning text-center font-weight-bold'>В работе
                         {% endif %}
+                          <div class="dropdown-menu">
+                              {% if request.user.is_superuser %}
 
-                      <div class="dropdown-menu">
-                        <button class="btn bg-info text-white dropdown-item" data-toggle="modal" data-target="#deal_id_write_off-{{deal|get_value_from_dict:'id'}}">Списать</button>
-                        <button class="btn bg-warning text-white dropdown-item" data-toggle="modal" data-target="#deal_id_charge-{{deal|get_value_from_dict:'id'}}" >Вернуть</button>
-                      </div>
+                                <button class="btn bg-info text-white dropdown-item" data-toggle="modal" data-target="#deal_id_write_off-{{deal|get_value_from_dict:'id'}}">Списать</button>
+                                <button class="btn bg-warning text-white dropdown-item" data-toggle="modal" data-target="#deal_id_charge-{{deal|get_value_from_dict:'id'}}" >Вернуть</button>
+                              {% endif %}
+
+                          </div>
                     </div>
                   </td>
                   <td> {% if deal|get_value_from_dict:'comment' %}{{deal|get_value_from_dict:'comment'}} {% else %} - {% endif %}</td>

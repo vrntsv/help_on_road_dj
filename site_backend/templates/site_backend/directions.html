@@ -3,207 +3,192 @@
 {% block tittle %}
     <title>Направления</title>
 {% endblock %}
-        {% block content %}
-
-
-		        <!-- Begin Page Content -->
-		        <div class="container-fluid">
-		          <div class="card shadow mb-4">
-		            <div class="card-header py-3">
-		              <h4 class="m-0 font-weight-bold text-primary">Добавить направление</h4>
-		            </div>
-		            <div class="card-body">
-		              <div class="input-responsive">
-		                <form action="" method="post" >
-		                  <div class="form-row">
-                              {% csrf_token %}
-		                    <div class="form-group col-md-6">
-		                      <input type="text" class="form-control" name="direction_name" placeholder="Направление" required>
-		                    </div>
-		                  </div>
-		                  <div class="form-row">
-		                    <div class="form-group col-lg-4">
-		                      <input type="number" class="form-control" name="step_0" placeholder="0 этап" required>
-		                    </div>
-		                    <div class="form-group col-lg-4">
-		                      <input type="number" class="form-control" name="step_1" placeholder="1 этап" required>
-		                    </div>
-		                    <div class="form-group col-lg-4">
-		                      <input type="number" class="form-control" name="step_2" placeholder="2 этап" required>
-		                    </div>
-		                    <div class="form-group col-lg-4">
-		                      <input type="number" class="form-control" name="step_3" placeholder="3 этап" required>
-		                    </div>
-		                    <div class="form-group col-lg-4">
-		                      <input type="number" class="form-control" name="step_4" placeholder="4 этап" required>
-		                    </div>
-		                    <div class="form-group col-lg-4">
-		                      <input type="number" class="form-control" name="step_5" placeholder="5 этап" required>
-		                    </div>
-		                    <div class="form-group col-lg-4">
-		                      <input type="number" class="form-control" name="step_6" placeholder="6 этап" required>
-		                    </div>
-		                  </div>
-		                  <button  type="submit" class="col my-auto btn btn-primary">Добавить</button>
-		                </form>
-		                <br>
-		              </div>
-		            </div>
-		          </div>
-		        </div>
-		        <div class="container-fluid">
-		        	<div class="card shadow mb-4">
-		        		<div class="card-header py-3">
-		              		<h4 class="m-0 font-weight-bold text-primary">Время перехода между этапами N минут</h4>
-		            	</div>
-		            	<div class="card-body">
-				            <div class="input-responsive">
-				              	<div class="table-responsive">
-				              		<p class='text-xs'>Для смены таймера перейдите в раздел "техническое меню",затем "Установки"</p>
-					                <table class="table table-sm-4 table-md-8 table-lg-12 table-bordered" id="dataTable" width="100%" cellspacing="0">
-					                  <thead>
-					                    <tr class="text-gray-900">
-											<th><b>Направление</b></th>
-											<th><b>Эксклюзивщик</b></th>
-											<th><b>Этап 1</b></th>
-											<th><b>Этап 2</b></th>
-											<th><b>Этап 3</b></th>
-											<th><b>Этап 4</b></th>
-											<th><b>Этап 5</b></th>
-											<th><b>Дисконтный этап</b></th>
-											<th><b>Пост-оплата</b></th>
-											<th><b>Универсал</b></th>
-											<th><b>Действие</b></th>
-					                    </tr>
-					                  </thead>
-					                  <tfoot>
-					                  	<tr class="text-gray-900">
-					                      	<th><b>Направление</b></th>
-											<th><b>Эксклюзивщик</b></th>
-											<th><b>Этап 1</b></th>
-											<th><b>Этап 2</b></th>
-											<th><b>Этап 3</b></th>
-											<th><b>Этап 4</b></th>
-											<th><b>Этап 5</b></th>
-											<th><b>Дисконтный этап</b></th>
-											<th><b>Пост-оплата</b></th>
-											<th><b>Универсал</b></th>
-											<th><b>Действие</b></th>
-					                    </tr>
-					                  </tfoot>
-					                  <tbody>
-	                                  {% for wt in work_types %}
-					                    <tr>
-					                      <th>{{ wt.type }}</th>
-					                      <th>{{ wt.comm_stage_0 }}</th>
-					                      <th>{{ wt.comm_stage_1 }}</th>
-					                      <th>{{ wt.comm_stage_2 }}</th>
-					                      <th>{{ wt.comm_stage_3 }}</th>
-					                      <th>{{ wt.comm_stage_4 }}</th>
-					                      <th>{{ wt.comm_stage_5 }}</th>
-					                      <th>{{ wt.comm_stage_6 }}</th>
-					                      <th>{% if wt.post_pay  %} ✅ {% else %} ❎ {% endif %}</th>
-					                      <!-- назови переменную -->
-					                      <th>{% if wt.excl_type  %} ✅ {% else %} ❎ {% endif %}</th>
-	                                        <th>
-					                        <button  type="submit" data-toggle="modal" data-target="#wt-{{ wt.id }}"  class="col my-auto btn bg-gray-200">Редактировать</button>
-					                        <button  type="submit" class="col my-auto btn btn-danger">Удалить</button>
-					                      </th>
-					                    </tr>
-	                                  {% endfor %}
-					                  </tbody>
-					                </table>
-				            	</div>
-				            </div>
-			            </div>
-		        	</div>
-		          	<!-- Content Row -->
-				</div>
-	        </div>
-	        <!-- /.container-fluid -->
-	    </div>
-	      <!-- End of Main Content -->
-	</div>
-	    <!-- End of Content Wrapper -->
-
-   	{% for wt in work_types %}
-        <form  method="post" action="{% url 'site_backend:directions_change_url' wt.id %}">
-
-            <div class="modal fade" id="wt-{{wt.id}}" tabindex="-1" role="dialog">
-                <div class="modal-dialog modal-xl" role="document">
-                    <div class="modal-content">
-                        {% csrf_token %}
-                        <div class="modal-header">
-                          <input class="form-control" type="text" name="type" value="{{wt.type}}">
-                        </div>
-                        <div class="modal-body">
-                          <div class="container">
-                            <div class="form-row">
-                                <div class="form-group col-lg-4">
-                                    <label for="">Универсал</label>
-                                    <input type="text" class="form-control" name="step0" value="{{ wt.comm_stage_0 }}">
-                                </div>
-                                <div class="form-group col-lg-4">
-                                    <label for="">1 этап</label>
-                                    <input type="text" class="form-control" name="step1" value="{{ wt.comm_stage_1 }}">
-                                </div>
-                                <div class="form-group col-lg-4">
-                                    <label for="">2 этап</label>
-                                    <input type="text" class="form-control" name="step2" value="{{ wt.comm_stage_2 }}">
-                                </div>
-                                <div class="form-group col-lg-4">
-                                    <label for="">3 этап</label>
-                                    <input type="text" class="form-control" name="step3" value="{{ wt.comm_stage_3 }}">
-                                </div>
-                                <div class="form-group col-lg-4">
-                                    <label for="">4 этап</label>
-                                    <input type="text" class="form-control" name="step4" value="{{ wt.comm_stage_4 }}">
-                                </div>
-                                <div class="form-group col-lg-4">
-                                    <label for="">5 этап</label>
-                                    <input type="text" class="form-control" name="step5" value="{{ wt.comm_stage_5 }}">
-                                </div>
-                                <div class="form-group col-lg-4">
-                                    <label for="">Дисконтный этап</label>
-                                    <input type="text" class="form-control" name="step6" value="{{ wt.comm_stage_6 }}">
-                                </div>
-                                <div class="custom-control custom-switch">
-                                    {% if wt.post_pay %}
-                                        <input type="checkbox" class="custom-control-input" id="post_pay" value="on" name="post_pay" checked>
-                                        <label class="custom-control-label" for="post_pay"> Пост-оплата </label>
-                                    {% else %}
-                                        <input type="checkbox" class="custom-control-input" id="post_pay" value="off" name="post_pay" >
-                                        <label class="custom-control-label" for="post_pay"> Пост-оплата </label>
-                                    {% endif %}
-                                </div>
-
-                                <div class="custom-control custom-switch">
-                                    {% if wt.excl_type %}
-                                        <input type="checkbox" class="custom-control-input" id="excl_type" value="on" name="excl_type" checked>
-                                        <label class="custom-control-label" for="excl_type"> Универсалы </label>
-                                    {% else %}
-                                        <input type="checkbox" class="custom-control-input" id="excl_type" value="off" name="excl_type" >
-                                        <label class="custom-control-label" for="excl_type"> Универсалы </label>
-                                    {% endif %}
-                                </div>
-
-                              </div>
-                              <br>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-success">Cохранить</button>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                        </div>
-
-                    </div>
+{% block content %}
+<div class="container-fluid">
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h4 class="m-0 font-weight-bold text-primary">Добавить направление</h4>
+    </div>
+    <div class="card-body">
+      <div class="input-responsive">
+        <form action="" method="post" >
+          <div class="form-row">
+              {% csrf_token %}
+            <div class="form-group col-md-6">
+              <input type="text" class="form-control" name="direction_name" placeholder="Направление" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-lg-4">
+              <input type="number" class="form-control" name="step_0" placeholder="0 этап" required>
+            </div>
+            <div class="form-group col-lg-4">
+              <input type="number" class="form-control" name="step_1" placeholder="1 этап" required>
+            </div>
+            <div class="form-group col-lg-4">
+              <input type="number" class="form-control" name="step_2" placeholder="2 этап" required>
+            </div>
+            <div class="form-group col-lg-4">
+              <input type="number" class="form-control" name="step_3" placeholder="3 этап" required>
+            </div>
+            <div class="form-group col-lg-4">
+              <input type="number" class="form-control" name="step_4" placeholder="4 этап" required>
+            </div>
+            <div class="form-group col-lg-4">
+              <input type="number" class="form-control" name="step_5" placeholder="5 этап" required>
+            </div>
+            <div class="form-group col-lg-4">
+              <input type="number" class="form-control" name="step_6" placeholder="6 этап" required>
+            </div>
+          </div>
+          <button  type="submit" class="col my-auto btn btn-primary">Добавить</button>
+        </form>
+        <br>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h4 class="m-0 font-weight-bold text-primary">Время перехода между этапами N минут</h4>
+        </div>
+        <div class="card-body">
+            <div class="input-responsive">
+                <div class="table-responsive">
+                    <p class='text-xs'>Для смены таймера перейдите в раздел "техническое меню",затем "Установки"</p>
+                    <table class="table table-sm-4 table-md-8 table-lg-12 table-bordered" id="dataTable" width="100%" cellspacing="0">
+                      <thead>
+                        <tr class="text-gray-900">
+                            <th><b>Направление</b></th>
+                            <th><b>Этап 0</b></th>
+                            <th><b>Этап 1</b></th>
+                            <th><b>Этап 2</b></th>
+                            <th><b>Этап 3</b></th>
+                            <th><b>Этап 4</b></th>
+                            <th><b>Этап 5</b></th>
+                            <th><b>Дисконтный этап</b></th>
+                            <th><b>Пост-оплата</b></th>
+                            <th><b>👑</b></th>
+                            <th><b>Действие</b></th>
+                        </tr>
+                      </thead>
+                      <tfoot>
+                        <tr class="text-gray-900">
+                            <th><b>Направление</b></th>
+                            <th><b>Эксклюзивщик</b></th>
+                            <th><b>Этап 1</b></th>
+                            <th><b>Этап 2</b></th>
+                            <th><b>Этап 3</b></th>
+                            <th><b>Этап 4</b></th>
+                            <th><b>Этап 5</b></th>
+                            <th><b>Дисконтный этап</b></th>
+                            <th><b>Пост-оплата</b></th>
+                            <th><b>Универсал</b></th>
+                            <th><b>Действие</b></th>
+                        </tr>
+                      </tfoot>
+                      <tbody>
+                      {% for wt in work_types %}
+                        <tr>
+                          <th>{{ wt.type }}</th>
+                          <th>{{ wt.comm_stage_0 }}</th>
+                          <th>{{ wt.comm_stage_1 }}</th>
+                          <th>{{ wt.comm_stage_2 }}</th>
+                          <th>{{ wt.comm_stage_3 }}</th>
+                          <th>{{ wt.comm_stage_4 }}</th>
+                          <th>{{ wt.comm_stage_5 }}</th>
+                          <th>{{ wt.comm_stage_6 }}</th>
+                          <th>{% if wt.post_pay  %} ✅ {% else %} ❎ {% endif %}</th>
+                          <!-- назови переменную -->
+                          <th>{% if wt.excl_type  %} ✅ {% else %} ❎ {% endif %}</th>
+                            <th>
+                            <button  type="submit" data-toggle="modal" data-target="#wt-{{ wt.id }}"  class="col my-auto btn bg-gray-200">Редактировать</button>
+                            <button  type="submit" class="col my-auto btn btn-danger">Удалить</button>
+                          </th>
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+                    </table>
                 </div>
             </div>
-        </form>
-	{% endfor %}
-	<!-- Scroll to Top Button-->
-	<a class="scroll-to-top rounded" href="#page-top">
-		<i class="fas fa-angle-up"></i>
-	</a>
+        </div>
+    </div>
+    <!-- Content Row -->
+</div>
 
+{% for wt in work_types %}
+    <form  method="post" action="{% url 'site_backend:directions_change_url' wt.id %}">
+        <div class="modal fade" id="wt-{{wt.id}}" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <input class="form-control" type="text" name="type" value="{{wt.type}}">
+                    </div>
+                    <div class="modal-body">
+                      <div class="container">
+                        <div class="form-row">
+                            <div class="form-group col-lg-4">
+                                <label for="">Универсал</label>
+                                <input type="text" class="form-control" name="step0" value="{{ wt.comm_stage_0 }}">
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label for="">1 этап</label>
+                                <input type="text" class="form-control" name="step1" value="{{ wt.comm_stage_1 }}">
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label for="">2 этап</label>
+                                <input type="text" class="form-control" name="step2" value="{{ wt.comm_stage_2 }}">
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label for="">3 этап</label>
+                                <input type="text" class="form-control" name="step3" value="{{ wt.comm_stage_3 }}">
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label for="">4 этап</label>
+                                <input type="text" class="form-control" name="step4" value="{{ wt.comm_stage_4 }}">
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label for="">5 этап</label>
+                                <input type="text" class="form-control" name="step5" value="{{ wt.comm_stage_5 }}">
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label for="">Дисконтный этап</label>
+                                <input type="text" class="form-control" name="step6" value="{{ wt.comm_stage_6 }}">
+                            </div>
+                            <div class="custom-control custom-switch">
+                                {% if wt.post_pay %}
+                                    <input type="checkbox" class="custom-control-input" id="post_pay" value="on" name="post_pay" checked>
+                                    <label class="custom-control-label" for="post_pay"> Пост-оплата </label>
+                                {% else %}
+                                    <input type="checkbox" class="custom-control-input" id="post_pay" value="off" name="post_pay" >
+                                    <label class="custom-control-label" for="post_pay"> Пост-оплата </label>
+                                {% endif %}
+                            </div>
+
+                            <div class="custom-control custom-switch">
+                                {% if wt.excl_type %}
+                                    <input type="checkbox" class="custom-control-input" id="excl_type" value="on" name="excl_type" checked>
+                                    <label class="custom-control-label" for="excl_type"> Универсалы </label>
+                                {% else %}
+                                    <input type="checkbox" class="custom-control-input" id="excl_type" value="off" name="excl_type" >
+                                    <label class="custom-control-label" for="excl_type"> Универсалы </label>
+                                {% endif %}
+                            </div>
+
+                          </div>
+                          <br>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Cохранить</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </form>
+{% endfor %}
 {% endblock %}

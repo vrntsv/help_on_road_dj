@@ -5,166 +5,128 @@
 {% cache 500 active_masters %}
 
 {% block content %}
-<body id="page-top">
-
-  <!-- Page Wrapper -->
-  <div id="wrapper">
-
-    <!-- Content Wrapper -->
-    <div id="content-wrapper" class="d-flex flex-column">
-
-      <!-- Main Content -->
-      <div id="content">
-        <!-- Begin Page Content -->
-        <div class="container-fluid">
-          <!-- DataTales Example -->
-          <div class="card shadow mb-4">
-            <div class="card-body">
-              <div class="table-responsive">
+<div class="container-fluid">
+    <!-- DataTales -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                  <thead>
+                    <thead>
                     <tr>
-                      <!-- 
-                        баланс 1000 / 500 
-                        сделок: 10/5/3 выпол/сорвано/предложено 
+                        <!--
+                        баланс 1000 / 500
+                        сделок: 10/5/3 выпол/сорвано/предложено
                               👑 - эксклюзив
                         ✅ / ❌ - на линии
                               🥇 - услуга самый первый
-                      -->
-                      <th>Город</th>
-                      <th>ФИО</th>
-                      <th>Телефон</th>
-                      <th>Дата регистрации</th>
-                      <th>Баланс</th>
-                      <th>Доход по рефералам</th>
-                      <th>Сделок</th>
-                      <th>Действие</th>
+                        -->
+                        <th>Город</th>
+                        <th>ФИО</th>
+                        <th>Телефон</th>
+                        <th>Дата регистрации</th>
+                        <th>Баланс</th>
+                        <th>Доход по рефералам</th>
+                        <th>Сделок</th>
+                        <th>Действие</th>
                     </tr>
-                  </thead>
-                  <tbody>
-                  {% for emp in active_masters %}
-                        <tr>
-                          <td>{{ emp|get_value_from_dict:'name_city' }}</td>
-                          <td>{% if emp|get_value_from_dict:'exclusive' == 1 %} 👑 {% endif %}
-                              <a href="{% url "site_backend:master_card_url"  emp|get_value_from_dict:'id' %}">{{emp|get_value_from_dict:'full_name'}}</a>
-                          {% if emp|get_value_from_dict:'active' == 1 %} ✅ {% else %} ❌ {% endif %}
-                          {% if emp|get_value_from_dict:'very_first' %} 🥇 {% endif %} </td>
-                          <td>{{emp|get_value_from_dict:'phone'}}</td>
-                          <td>{{emp|get_value_from_dict:'reg_date'}}</td>
-                          <td>{{emp|get_value_from_dict:'balance'}} ₽<br>{{emp|get_value_from_dict:'bonuses'}} ₽</td>
-                          <th>{{emp|get_value_from_dict:'referal_income'}}₽</th>
-                          <!-- выводи сюда коэфициент (80%) формула : k = m/N
-                          N - общее число сделок пользователя
-                          m - выполнено
-                          k - коэффициент  -->
-                          <th data-toggle="tooltip" data-placement="top" title="{{emp|get_value_from_dict:'closed_deals_count'}}/{{emp|get_value_from_dict:'droped_deals_count'}}/{{emp|get_value_from_dict:'proped_deals_count'}}">
-											80%
-                          <!--  -->
-                      	  </th>
-                          <th>
-                            <div class="btn-group">
-                              <button  type="submit" data-toggle="modal" data-target="#editMenu_{{ emp|get_value_from_dict:'id' }}" class="col my-auto btn bg-gray-200">Редактировать</button>
-                              <!-- <div class="dropdown-menu">
-                                <a class="dropdown-item list-group-item-secondary" href="#"data-toggle="modal" data-target="#editMenu">Редактировать</a>
-                                <a class="dropdown-item list-group-item-primary" href="#">Заморозить</a>
-                                <a class="dropdown-item list-group-item-danger" href="#">Заблокировать</a>
-                                <div class="dropdown-divider"></div>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item list-group-item-info" href="#">Бонус 1 заказ</a>
-                              </div> -->
-                            </div>
-                          </th>
-                        </tr>
-                   {% endfor %}
-                  </tbody>
+                </thead>
+                    <tbody>
+                        {% for emp in active_masters %}
+                            <tr>
+                                <td>{{ emp|get_value_from_dict:'name_city' }}</td>
+                                <td>
+                                    {% if emp|get_value_from_dict:'exclusive' == 1 %} 👑 {% endif %}
+                                    <a href="{% url "site_backend:master_card_url"  emp|get_value_from_dict:'id' %}">
+                                        {{emp|get_value_from_dict:'full_name'}}
+                                    </a>
+                                    {% if emp|get_value_from_dict:'active' == 1 %} ✅ {% else %} ❌ {% endif %}
+                                    {% if emp|get_value_from_dict:'very_first' %} 🥇 {% endif %}
+                                </td>
+                                <td>{{emp|get_value_from_dict:'phone'}}</td>
+                                <td>{{emp|get_value_from_dict:'reg_date'}}</td>
+                                <td>{{emp|get_value_from_dict:'balance'}} ₽<br>{{emp|get_value_from_dict:'bonuses'}} ₽</td>
+                                <td>{{emp|get_value_from_dict:'referal_income'}}₽</td>
+                                <!-- выводи сюда коэфициент (80%) формула : k = m/N
+                                N - общее число сделок пользователя
+                                m - выполнено
+                                k - коэффициент  -->
+                                <td data-toggle="tooltip" data-placement="top" title="{{emp|get_value_from_dict:'closed_deals_count'}}/{{emp|get_value_from_dict:'droped_deals_count'}}/{{emp|get_value_from_dict:'proped_deals_count'}}">
+                                                80%
+                                </td>
+                                <td>
+                                    <button  type="submit" data-toggle="modal" data-target="#editMenu_{{ emp|get_value_from_dict:'id' }}" class="col my-auto btn bg-gray-200">Редактировать</button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
                 </table>
-              </div>
             </div>
-          </div>
         </div>
-        <!-- /.container-fluid -->
-      </div>
-      <!-- End of Main Content -->
     </div>
-    <!-- End of Content Wrapper -->
-  </div>
+</div>
+<!-- /.container-fluid -->
 
-  <!-- End of Page Wrapper -->
-
-  <!-- Scroll to Top Button-->
-  <a class="scroll-to-top rounded" href="#page-top">
-    <i class="fas fa-angle-up"></i>
-  </a>
-
-    {% for emp in active_masters %}
-            <div class="modal fade" id="editMenu_{{ emp|get_value_from_dict:'id' }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="exampleModalLabel">Редактирование карточки исполнителя</h5>
-                      <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+{% for emp in active_masters %}
+    <div class="modal fade" id="editMenu_{{ emp|get_value_from_dict:'id' }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Редактирование карточки исполнителя</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
-                      </button>
-                    </div>
-                   <form action="{% url 'site_backend:edit_users_data' emp|get_value_from_dict:'id' %}" method="post">
-                      {% csrf_token %}
+                    </button>
+                </div>
+                <form action="{% url 'site_backend:edit_users_data' emp|get_value_from_dict:'id' %}" method="post">
+                    {% csrf_token %}
                     <div class="modal-body">
-                      <!-- Не забудь про корону ее выводить до поля с инпутом -->
-                      {% if emp|get_value_from_dict:'exlusive' %}
-                        👑
-                      {% endif %}
-                      <input class="form-control" type="text" name="full_name" value="{{ emp|get_value_from_dict:'full_name' }}" placeholder="Имя"><br>
-                      <input class="form-control" type="text" name="phone" placeholder="Номер телефона" value="{{ emp|get_value_from_dict:'phone' }}"><br>
-                      <p>Список направлений:</p>
-                          <div class="container" >
-                              {% for wt in work_types %}
-                               {% if wt|get_value_from_dict:'id' in emp|get_value_from_dict:'emp_wt' %}
-                                  <input class="form-check-input" type="checkbox" value="{{ wt|get_value_from_dict:'id' }}" name="emp_wt" id="defaultCheck1" checked>
-                                  <label class="form-check-label" for="defaultCheck1" >
-                                    {{ wt|get_value_from_dict:'type' }}
-                                  </label><br>
+                        {% if emp|get_value_from_dict:'exlusive' %}👑{% endif %}
+                        <input class="form-control" type="text" name="full_name" value="{{ emp|get_value_from_dict:'full_name' }}" placeholder="Имя"><br>
+                        <input class="form-control" type="text" name="phone" placeholder="Номер телефона" value="{{ emp|get_value_from_dict:'phone' }}"><br>
+                        <p>Список направлений:</p>
+                        <div class="container" >
+                            {% for wt in work_types %}
+                                {% if wt|get_value_from_dict:'id' in emp|get_value_from_dict:'emp_wt' %}
+                                    <input class="form-check-input" type="checkbox" value="{{ wt|get_value_from_dict:'id' }}" name="emp_wt" id="defaultCheck1" checked>
+                                    <label class="form-check-label" for="defaultCheck1" >
+                                        {{ wt|get_value_from_dict:'type' }}
+                                    </label><br>
                                 {% else %}
-                                  <input class="form-check-input" type="checkbox" value="{{ wt|get_value_from_dict:'id' }}" name="emp_wt" id="defaultCheck1" >
-                                  <label class="form-check-label" for="defaultCheck1">
-                                    {{ wt|get_value_from_dict:'type' }}
-                                  </label><br>
+                                    <input class="form-check-input" type="checkbox" value="{{ wt|get_value_from_dict:'id' }}" name="emp_wt" id="defaultCheck1" >
+                                    <label class="form-check-label" for="defaultCheck1">
+                                        {{ wt|get_value_from_dict:'type' }}
+                                    </label><br>
                                 {% endif %}
-
-                            {% endfor %}
-                              <br><br>
+                            {% endfor %}<br><br>
                             {% if emp|get_value_from_dict:'exclusive' %}
-                              <input type="checkbox" class="custom-control-input" id="excl_type" value="on" name="excl_type" checked >
-                              <label class="custom-control-label" for="excl_type"> Статус универсала </label>
-                          {% else %}
-                              <input type="checkbox" class="custom-control-input" id="excl_type" value="off" name="excl_type"  >
-                              <label class="custom-control-label" for="excl_type"> Статус универсала </label>
-                          {% endif %}
-                          </div>
-                      <br><br>
-
-                      <div class="container">
-                        <div class="row">
-                          <button class="btn btn-danger col-6" type="button" name="block" data-dismiss="modal" >
-                            Заблокировать
-                          </button>
-                          <button class="btn btn-info col-6" type="button" name="freeze" data-dismiss="modal">
-                            Заморозить
-                          </button>
+                                <input type="checkbox" class="custom-control-input" id="excl_type" value="on" name="excl_type" checked >
+                                <label class="custom-control-label" for="excl_type"> Статус универсала </label>
+                            {% else %}
+                                <input type="checkbox" class="custom-control-input" id="excl_type" value="off" name="excl_type"  >
+                                <label class="custom-control-label" for="excl_type"> Статус универсала </label>
+                            {% endif %}
                         </div>
-                      </div>
-
+                        <br><br>
+                        <div class="container">
+                            <div class="row">
+                                <button class="btn btn-danger col-6" type="button" name="block" data-dismiss="modal" >
+                                    Заблокировать
+                                </button>
+                                <button class="btn btn-info col-6" type="button" name="freeze" data-dismiss="modal">
+                                    Заморозить
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
-
                       <button class="btn btn-success" type="submit">Сохранить</button>
                       <button class="btn btn-secondary" type="submit" data-dismiss="modal" aria-label="Close">Отмена</button>
                     </div>
-                                  </form>
+                </form>
 
-                  </div>
-                </div>
-              </div>
+            </div>
+        </div>
+    </div>
 {% endfor %}
 {% endblock %}
-    {% endcache %}
+{% endcache %}
 

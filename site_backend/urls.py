@@ -28,6 +28,7 @@ urlpatterns = [
     path('active_masters/search', views.active_masters_search_router, name='am_search_url'),
     path('frozen_masters/', views.frozen_masters_router, name='frozen_url'),
     path('blocked_masters/', views.blocked_masters_router, name='blocked_url'),
+    path('statistic/', views.statistic_router, name='statistic_url'),
     path('active_masters?wt=<int:wt_id>;city=<int:city_id>/', views.active_master_wt_city, name='am_url_wt_city'),
     path('active_masters?wt=<int:wt_id>;active=1/', views.active_master_online_wt, name='am_url_wt_online'),
     path('active_masters?wt=<int:wt_id>;exclusive=1/', views.active_master_exclusive_wt, name='am_url_wt_exсlusive'),

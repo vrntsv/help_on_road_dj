@@ -197,11 +197,20 @@ def get_employees_very_first():
     full_data = []
     very_first_emps = models.VeryFirst.objects.values()
     for very_first_data in very_first_emps:
-        vf_data = models.VeryFirst.objects.filter(id_user=very_first_data['id_user_id']).values()
-        emp_data = models.Employees.objects.filter(id=very_first_data['id_user_id']).values()
+        vf_data = models.VeryFirst.objects.filter(id_user=very_first_data['id_user_id'], date_end__lt=datetime.date.today()).values()
+        emp_data = models.Employees.objects.filter(id=very_first_data['id_user_id'], ).values()
         full_data.append({'very_first_data': vf_data,
                           'emp_data': emp_data})
     return full_data
+
+
+def get_employees_very_first_raw():
+    from django.db import connection
+    cursor = connection.cursor()
+    cursor.execute('SELECT e.id, e.phone, e.full_name, vf.date_start, vf.date_end, vf.tariff, vf.price FROM employees e '
+                   'LEFT JOIN very_first vf on e.id=vf.id_user '
+                   'WHERE TIMESTAMPDIFF (SECOND, vf.date_end, NOW()) > 0')
+    return dictfetchall(cursor)
 
 
 def get_active_cities():
@@ -428,7 +437,7 @@ def get_online_ammount_wt():
 
 def get_active_masters_info(wt=None, city=None, exclusive=None, active=None,
                             vf=None, freeze=None, blocked=None, negative_balance=None,
-                            positive_balance=None, registered_today=None, search=None):
+                            positive_balance=None, registered_today=None, search=None, do_pagination=None):
     emp_info = []
     emps = models.Employees.objects.all().filter(status=1)
     if wt:
@@ -538,6 +547,16 @@ def get_not_registered_masters():
     return full_data
 
 
+def get_emp_ammount_cities_raw():
+    cursor = connection.cursor()
+    cursor.execute('SELECT COUNT(employees.id), employees.id_city, wt.id  from employees '
+                   'left join employees_work_type ewt ON ewt.id_user=employees.id '
+                   'left join work_type wt on ewt.id_work_type=wt.id '
+                   'WHERE employees.exclusive is NULL '
+                   'GROUP BY wt.type ')
+    return dictfetchall(cursor)
+
+
 def freeze_emp(emp_id):
     emp = models.Employees.objects.get(id=emp_id)
     emp.status = -1
@@ -615,15 +634,16 @@ def get_master_card_info(master_id):
         'transfers': list(users_transfers),
     }
 
+
 def get_active_deals():
     return models.Deals.objects.all().filter(status=1).values()
+
 
 def get_history():
     return models.UsersHistory.objects.all().values()
 
 
-
-
-
 def get_clients():
     return models.Client.objects.all().values()
+
+
