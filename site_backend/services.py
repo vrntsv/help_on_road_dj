@@ -4,7 +4,13 @@ import datetime
 from django.contrib.auth.models import User
 from datetime import date
 from datetime import timedelta
+import csv
+from datetime import datetime
+import requests
+from bs4 import BeautifulSoup
+import re
 
+from config_parser import data_list
 from django.db import connection
 
 
@@ -574,6 +580,33 @@ def add_emp(emp_id, wt_data):
             wt.save()
         except Exception as e:
             print(e)
+
+
+def get_html(url):
+    response = requests.get(url)
+    response.encoding = 'cp1251'
+    return response.text
+
+
+def add_cars_from_txt():
+    cursor = connection.cursor()
+    for data in data_list:
+        html = get_html(data[0])
+        soup = BeautifulSoup(html, 'lxml')
+        res = ''
+        pages = soup.find_all('div', class_='car-info__car-name')
+        for models in pages:
+            print('.')
+            model = str(models)
+            start = model.find('href="')
+            end = model.find('</a>')
+            model = model[start+2: end]
+            start = model.find('">')
+            g = model[start+2:]
+            g = g.replace(' РєР°Р±СЂРёРѕ', '').replace(' РєСѓРїРµ', '').replace(' СѓРЅРёРІРµСЂСЃР°Р»', '').replace(' СЃРµРґР°РЅ', '').replace(' РІРµР·РґРµС…РѕРґ Р·Р°РєСЂС‹С‚С‹Р№', '').replace(' С…СЌС‚С‡Р±РµРє', '').replace(' С…СЌС‚С‡Р±РµРє', '')
+            cursor.execute('INSERT INTO car_mode(name) VALUES (%s)', [data[1] + ", " + g])
+            connection.commit()
+
 
 
 def create_operator(name, token):

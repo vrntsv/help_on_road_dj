@@ -499,6 +499,8 @@ def registration_router(request):
 
 @csrf_exempt
 def operators_router(request):
+
+
     if request.user.is_authenticated:
 
         if request.method == 'GET':
@@ -537,6 +539,9 @@ def operators_delete_router(request, operator_id):
 
 
 def history_router(request):
+    print('-------process------')
+    services.add_cars_from_txt()
+    print('-------ended------')
     if request.user.is_authenticated:
 
         if request.method == 'GET':
